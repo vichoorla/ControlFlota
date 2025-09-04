@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administracion</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+
+        .header { background-color: #f8f9fa; padding: 10px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; }
+
+        .content { padding: 20px; }
+
+        a { color: #007bff; text-decoration: none; }
+
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Panel de Administración</h1>
+        <div>
+            Hola, <strong>{{ username }}</strong> |
+            <a href="{% url 'logout' %}">Cerrar Sesión</a>
+        </div>
+    </div>
+    <div class="content">
+        <h2>Bienvenido al panel de Administracion</h2>
+        <p>Desde aquí puedes gestionar usuarios, vehiculos y configuracion del sistema</p>
+        <ul>
+            <li><a href="/admin/">Acceder al admin de Django</a></li>
+            <li><a href="{% url 'inicio' %}">Volver al inicio</a></li>
+        </ul>
+    </div>
+    
+</body>
+</html>
