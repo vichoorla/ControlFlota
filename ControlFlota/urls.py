@@ -20,8 +20,9 @@ from AppFlota import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('inicio/', views.bienvenida, name='inicio'),
-    path('chofer/', views.AgregarChofer, name='chofer'),
+    path('', views.bienvenida, name='inicio'),  
+    path('inicio/', views.bienvenida, name='inicio_alternativo'),  
+    path('agregar-chofer/', views.AgregarChofer, name='agregar_chofer'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('admin_dashboard/', views.admin_dashboard, name='admin_dashboard'),
