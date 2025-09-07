@@ -1,0 +1,56 @@
+{% extends 'TemplatesFlota/base.html' %}
+
+{% block title %}Agregar Combustible{% endblock %}
+
+{% block menu %}
+    <a href="{% url 'mecanico_dashboard' %}">Volver al Panel</a>
+    <a href="{% url 'mecanico_ver_combustible' %}">Ver Combustible</a>
+{% endblock %}
+
+{% block content %}
+<h2>Agregar Registro de Combustible</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="tipo_combustible">Tipo de Combustible:</label>
+        <input type="text" id="tipo_combustible" name="tipo_combustible" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="fecha_recarga">Fecha de Recarga:</label>
+        <input type="date" id="fecha_recarga" name="fecha_recarga" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="lugar">Lugar:</label>
+        <input type="text" id="lugar" name="lugar" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="encargado">Encargado:</label>
+        <input type="text" id="encargado" name="encargado" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="cantidad_estanque">Cantidad de Estanque:</label>
+        <input type="text" id="cantidad_estanque" name="cantidad_estanque" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="recargar">Recargar (Sí/No):</label>
+        <input type="text" id="recargar" name="recargar" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="vehiculo_id">Vehículo:</label>
+        <select id="vehiculo_id" name="vehiculo_id" required>
+            <option value="">Seleccione un vehículo</option>
+            {% for id, vehiculo in vehiculos.items %}
+            <option value="{{ vehiculo.id }}">{{ vehiculo.patente }} - {{ vehiculo.marca }} {{ vehiculo.modelo }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <input type="submit" value="Agregar Registro">
+</form>
+{% endblock %}

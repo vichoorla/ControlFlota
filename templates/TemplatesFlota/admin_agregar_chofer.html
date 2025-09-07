@@ -1,0 +1,40 @@
+{% extends 'TemplatesFlota/base.html' %}
+
+{% block title %}Agregar Chofer{% endblock %}
+
+{% block menu %}
+    <a href="{% url 'admin_dashboard' %}">Volver al Panel</a>
+{% endblock %}
+
+{% block content %}
+<h2>Agregar Chofer</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
+        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="telefono">Teléfono:</label>
+        <input type="text" id="telefono" name="telefono" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="estado">Estado:</label>
+        <input type="text" id="estado" name="estado" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="horas">Horas:</label>
+        <input type="number" id="horas" name="horas" required>
+    </div>
+    
+    <input type="submit" value="Agregar Chofer">
+</form>
+{% endblock %}

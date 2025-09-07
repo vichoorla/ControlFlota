@@ -1,0 +1,65 @@
+{% extends 'TemplatesFlota/base.html' %}
+
+{% block title %}Agregar Vehículo{% endblock %}
+
+{% block menu %}
+    <a href="{% url 'admin_dashboard' %}">Volver al Panel</a>
+{% endblock %}
+
+{% block content %}
+<h2>Agregar Vehículo</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="patente">Patente:</label>
+        <input type="text" id="patente" name="patente" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="vin">VIN:</label>
+        <input type="text" id="vin" name="vin" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="marca">Marca:</label>
+        <input type="text" id="marca" name="marca" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="modelo">Modelo:</label>
+        <input type="text" id="modelo" name="modelo" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="año">Año:</label>
+        <input type="text" id="año" name="año" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="motor">Motor:</label>
+        <input type="text" id="motor" name="motor" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="seguro">Seguro:</label>
+        <input type="text" id="seguro" name="seguro" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="revision_tecnica">Revisión Técnica:</label>
+        <input type="text" id="revision_tecnica" name="revision_tecnica" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="permiso_circulacion">Permiso de Circulación:</label>
+        <input type="text" id="permiso_circulacion" name="permiso_circulacion" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="gps">GPS:</label>
+        <input type="text" id="gps" name="gps" required>
+    </div>
+    
+    <input type="submit" value="Agregar Vehículo">
+</form>
+{% endblock %}

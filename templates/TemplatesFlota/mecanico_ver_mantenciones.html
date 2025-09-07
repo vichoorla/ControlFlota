@@ -1,0 +1,40 @@
+{% extends 'TemplatesFlota/base.html' %}
+
+{% block title %}Ver Mantenciones{% endblock %}
+
+{% block menu %}
+    <a href="{% url 'mecanico_dashboard' %}">Volver al Panel</a>
+    <a href="{% url 'mecanico_agregar_mantencion' %}">Agregar Mantención</a>
+{% endblock %}
+
+{% block content %}
+<h2>Registros de Mantenciones</h2>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tipo Mantención</th>
+            <th>Fecha</th>
+            <th>Descripción</th>
+            <th>Vehículo ID</th>
+            <th>Realizado por</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for id, mantencion in mantenciones.items %}
+        <tr>
+            <td>{{ mantencion.id }}</td>
+            <td>{{ mantencion.tipo_mantencion }}</td>
+            <td>{{ mantencion.fecha }}</td>
+            <td>{{ mantencion.descripcion }}</td>
+            <td>{{ mantencion.vehiculo_id }}</td>
+            <td>{{ mantencion.realizado_por }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No hay registros de mantenciones.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

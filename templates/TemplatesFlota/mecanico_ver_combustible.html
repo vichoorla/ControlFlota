@@ -1,0 +1,46 @@
+{% extends 'TemplatesFlota/base.html' %}
+
+{% block title %}Ver Combustible{% endblock %}
+
+{% block menu %}
+    <a href="{% url 'mecanico_dashboard' %}">Volver al Panel</a>
+    <a href="{% url 'mecanico_agregar_combustible' %}">Agregar Combustible</a>
+{% endblock %}
+
+{% block content %}
+<h2>Registros de Combustible</h2>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tipo Combustible</th>
+            <th>Fecha Recarga</th>
+            <th>Lugar</th>
+            <th>Encargado</th>
+            <th>Cantidad Estanque</th>
+            <th>Recargar</th>
+            <th>Vehículo ID</th>
+            <th>Registrado por</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for id, combustible in combustibles.items %}
+        <tr>
+            <td>{{ combustible.id }}</td>
+            <td>{{ combustible.tipo_combustible }}</td>
+            <td>{{ combustible.fecha_recarga }}</td>
+            <td>{{ combustible.lugar }}</td>
+            <td>{{ combustible.encargado }}</td>
+            <td>{{ combustible.cantidad_estanque }}</td>
+            <td>{{ combustible.recargar }}</td>
+            <td>{{ combustible.vehiculo_id }}</td>
+            <td>{{ combustible.registrado_por }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="9">No hay registros de combustible.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

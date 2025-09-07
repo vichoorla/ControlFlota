@@ -1,0 +1,40 @@
+{% extends 'TemplatesFlota/base.html' %}
+
+{% block title %}Ver Chofers{% endblock %}
+
+{% block menu %}
+    <a href="{% url 'admin_dashboard' %}">Volver al Panel</a>
+    <a href="{% url 'admin_agregar_chofer' %}">Agregar Chofer</a>
+{% endblock %}
+
+{% block content %}
+<h2>Lista de Chofers</h2>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Fecha Nacimiento</th>
+            <th>Teléfono</th>
+            <th>Estado</th>
+            <th>Horas</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for id, chofer in chofers.items %}
+        <tr>
+            <td>{{ chofer.id }}</td>
+            <td>{{ chofer.nombre }}</td>
+            <td>{{ chofer.fecha_nacimiento }}</td>
+            <td>{{ chofer.telefono }}</td>
+            <td>{{ chofer.estado }}</td>
+            <td>{{ chofer.horas }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No hay chofers registrados.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

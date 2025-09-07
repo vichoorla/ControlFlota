@@ -1,37 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Chofer</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+{% extends 'TemplatesFlota/base.html' %}
 
-        .header { background-color: #e9ecef; padding: 10px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; }
+{% block title %}Panel de Chofer{% endblock %}
 
-        .content { padding: 20px; }
+{% block menu %}
+    <a href="{% url 'chofer_ver_vehiculos' %}">Ver Vehículos</a>
+    <a href="{% url 'chofer_agregar_combustible' %}">Agregar Combustible</a>
+    <a href="{% url 'chofer_ver_combustible' %}">Ver Combustible</a>
+{% endblock %}
 
-        a { color: #007bff; text-decoration: none; }
-
-        a:hover { text-decoration: underline; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>Panel de Chofer</h1>
-        <div>
-            Hola, <strong>{{username}}</strong> |
-            <a href="{% url 'logout' %}">Cerrar Sesión</a>
-        </div>
-    </div>
-
-    <div class="content">
-        <h2>Bienvenido al panel de cofer</h2>
-        <p>Desde aquí puedes gestionar tus viajes y vehiculos asignados.</p>
-        <ul>
-        <li><a href="{% url 'agregar_chofer' %}">Agregar chofer</a></li>
-            <li><a href="{% url 'inicio' %}">Volver al inicio</a></li>
-        </ul>
-    </div>
-</body>
-</html>
+{% block content %}
+<h2>Panel de Chofer</h2>
+<p>Bienvenido, {{ nombre_usuario }}</p>
+{% endblock %}

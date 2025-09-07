@@ -1,0 +1,41 @@
+{% extends 'TemplatesFlota/base.html' %}
+
+{% block title %}Agregar Mantención{% endblock %}
+
+{% block menu %}
+    <a href="{% url 'mecanico_dashboard' %}">Volver al Panel</a>
+    <a href="{% url 'mecanico_ver_mantenciones' %}">Ver Mantenciones</a>
+{% endblock %}
+
+{% block content %}
+<h2>Agregar Mantención</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="tipo_mantencion">Tipo de Mantención:</label>
+        <input type="text" id="tipo_mantencion" name="tipo_mantencion" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="fecha">Fecha:</label>
+        <input type="date" id="fecha" name="fecha" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="descripcion">Descripción:</label>
+        <textarea id="descripcion" name="descripcion" required></textarea>
+    </div>
+    
+    <div class="form-group">
+        <label for="vehiculo_id">Vehículo:</label>
+        <select id="vehiculo_id" name="vehiculo_id" required>
+            <option value="">Seleccione un vehículo</option>
+            {% for id, vehiculo in vehiculos.items %}
+            <option value="{{ vehiculo.id }}">{{ vehiculo.patente }} - {{ vehiculo.marca }} {{ vehiculo.modelo }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <input type="submit" value="Agregar Mantención">
+</form>
+{% endblock %}

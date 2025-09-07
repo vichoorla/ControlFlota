@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib import messages
 
-# Almacenamiento en memoria (simula base de datos)
 vehiculos = {}
 chofers = {}
 mecanicos = {}
@@ -20,25 +19,6 @@ chofer_id_counter = 1
 mecanico_id_counter = 1
 combustible_id_counter = 1
 mantencion_id_counter = 1
-
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
-# Create your views here.
-
-# Añade esta función si no existe:
-def bienvenida(request):
-    return HttpResponse("<h1>Bienvenido/a a la página!</h1>")
-
-# El resto de tus funciones existentes...
-USUARIOS_PRUEBA = {
-    'admin': {'password': 'admin123','tipo': 'admin'},
-    'chofer': {'password': 'chofer123','tipo':'chofer'},
-    'mecanico': {'password': 'mecanico123','tipo':'mecanico'}
-}
-
-def AgregarChofer(request):
-    return render(request, 'TemplatesFlota/index.html')
-# ... resto del código
 
 def login_view(request):
     if request.method == 'POST':
@@ -66,7 +46,6 @@ def logout_view(request):
     request.session.flush()
     return redirect('login')
 
-# Decoradores de autenticación (los que ya tenías)
 def requiere_autenticacion(view_func):
     def wrapper(request, *args, **kwargs):
         if not request.session.get('usuario_autenticado'):
@@ -106,19 +85,19 @@ def mecanico_dashboard(request):
         'nombre_usuario': request.session.get('nombre_usuario')
     })
 
-# Funciones para Admin
+# Finciones para Admin
 @requiere_autenticacion
 @requiere_tipo_usuario(['admin'])
 def admin_agregar_chofer(request):
     global chofer_id_counter
-    
+
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
         fecha_nacimiento = request.POST.get('fecha_nacimiento')
         telefono = request.POST.get('telefono')
         estado = request.POST.get('estado')
         horas = request.POST.get('horas')
-        
+
         chofer_id = chofer_id_counter
         chofers[chofer_id] = {
             'id': chofer_id,
@@ -129,7 +108,7 @@ def admin_agregar_chofer(request):
             'horas': horas
         }
         chofer_id_counter += 1
-        
+
         messages.success(request, 'Chofer agregado correctamente')
         return redirect('admin_ver_chofers')
     
@@ -146,7 +125,7 @@ def admin_ver_chofers(request):
 @requiere_tipo_usuario(['admin'])
 def admin_agregar_vehiculo(request):
     global vehiculo_id_counter
-    
+
     if request.method == 'POST':
         patente = request.POST.get('patente')
         vin = request.POST.get('vin')
@@ -174,7 +153,7 @@ def admin_agregar_vehiculo(request):
             'gps': gps
         }
         vehiculo_id_counter += 1
-        
+
         messages.success(request, 'Vehículo agregado correctamente')
         return redirect('admin_ver_vehiculos')
     
@@ -183,7 +162,7 @@ def admin_agregar_vehiculo(request):
 @requiere_autenticacion
 @requiere_tipo_usuario(['admin'])
 def admin_ver_vehiculos(request):
-    return render(request, 'TemplatesFlota/admin_ver_vehiculos.html', {
+    return render(request, 'TemplatesFlota/admin_ver_vehiculos.html',{
         'vehiculos': vehiculos
     })
 
@@ -213,7 +192,6 @@ def chofer_ver_vehiculos(request):
 @requiere_tipo_usuario(['chofer'])
 def chofer_agregar_combustible(request):
     global combustible_id_counter
-    
     if request.method == 'POST':
         tipo_combustible = request.POST.get('tipo_combustible')
         fecha_recarga = request.POST.get('fecha_recarga')
@@ -222,7 +200,7 @@ def chofer_agregar_combustible(request):
         cantidad_estanque = request.POST.get('cantidad_estanque')
         recargar = request.POST.get('recargar')
         vehiculo_id = request.POST.get('vehiculo_id')
-        
+
         combustible_id = combustible_id_counter
         combustibles[combustible_id] = {
             'id': combustible_id,
@@ -236,7 +214,7 @@ def chofer_agregar_combustible(request):
             'registrado_por': request.session.get('nombre_usuario')
         }
         combustible_id_counter += 1
-        
+
         messages.success(request, 'Registro de combustible agregado correctamente')
         return redirect('chofer_ver_combustible')
     
@@ -263,7 +241,7 @@ def mecanico_ver_vehiculos(request):
 @requiere_tipo_usuario(['mecanico'])
 def mecanico_agregar_combustible(request):
     global combustible_id_counter
-    
+
     if request.method == 'POST':
         tipo_combustible = request.POST.get('tipo_combustible')
         fecha_recarga = request.POST.get('fecha_recarga')
@@ -272,7 +250,7 @@ def mecanico_agregar_combustible(request):
         cantidad_estanque = request.POST.get('cantidad_estanque')
         recargar = request.POST.get('recargar')
         vehiculo_id = request.POST.get('vehiculo_id')
-        
+
         combustible_id = combustible_id_counter
         combustibles[combustible_id] = {
             'id': combustible_id,
@@ -286,7 +264,7 @@ def mecanico_agregar_combustible(request):
             'registrado_por': request.session.get('nombre_usuario')
         }
         combustible_id_counter += 1
-        
+
         messages.success(request, 'Registro de combustible agregado correctamente')
         return redirect('mecanico_ver_combustible')
     
@@ -305,13 +283,13 @@ def mecanico_ver_combustible(request):
 @requiere_tipo_usuario(['mecanico'])
 def mecanico_agregar_mantencion(request):
     global mantencion_id_counter
-    
+
     if request.method == 'POST':
         tipo_mantencion = request.POST.get('tipo_mantencion')
         fecha = request.POST.get('fecha')
         descripcion = request.POST.get('descripcion')
         vehiculo_id = request.POST.get('vehiculo_id')
-        
+
         mantencion_id = mantencion_id_counter
         mantenciones[mantencion_id] = {
             'id': mantencion_id,
@@ -322,7 +300,7 @@ def mecanico_agregar_mantencion(request):
             'realizado_por': request.session.get('nombre_usuario')
         }
         mantencion_id_counter += 1
-        
+
         messages.success(request, 'Mantención agregada correctamente')
         return redirect('mecanico_ver_mantenciones')
     

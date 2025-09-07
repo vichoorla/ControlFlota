@@ -1,36 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Mecanico</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+{% extends 'TemplatesFlota/base.html' %}
 
-        .header { background-color: #fff3cd; padding: 10px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; }
+{% block title %}Panel de Mecánico{% endblock %}
 
-        .content { padding: 20px; }
+{% block menu %}
+    <a href="{% url 'mecanico_ver_vehiculos' %}">Ver Vehículos</a>
+    <a href="{% url 'mecanico_agregar_combustible' %}">Agregar Combustible</a>
+    <a href="{% url 'mecanico_ver_combustible' %}">Ver Combustible</a>
+    <a href="{% url 'mecanico_agregar_mantencion' %}">Agregar Mantención</a>
+    <a href="{% url 'mecanico_ver_mantenciones' %}">Ver Mantenciones</a>
+{% endblock %}
 
-        a { color: #007bff; text-decoration: none; }
-
-        a:hover { text-decoration: underline; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>Panel de Mecánico</h1>
-        <div>
-            Hola, <strong>{{ username }}</strong> |
-            <a href="{% url 'logout' %}">Cerrar Sesión</a>
-        </div>
-    </div>
-    <div class="content">
-        <h2>Bienvenido al panel de mecánico</h2>
-        <p>Desde aquí puedes gestionar el mantenimiento de vehículos y reparaciones</p>
-        <ul>
-            <li><a href="{% url 'inicio' %}">Volver al inicio</a></li>
-        </ul>
-    </div>
-    
-</body>
-</html>
+{% block content %}
+<h2>Panel de Mecánico</h2>
+<p>Bienvenido, {{ nombre_usuario }}</p>
+{% endblock %}
