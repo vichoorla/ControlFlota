@@ -88,6 +88,8 @@ def mecanico_dashboard(request):
 # Finciones para Admin
 @requiere_autenticacion
 @requiere_tipo_usuario(['admin'])
+@requiere_autenticacion
+@requiere_tipo_usuario(['admin'])
 def admin_agregar_chofer(request):
     global chofer_id_counter
 
@@ -105,7 +107,8 @@ def admin_agregar_chofer(request):
             'fecha_nacimiento': fecha_nacimiento,
             'telefono': telefono,
             'estado': estado,
-            'horas': horas
+            'horas': horas,
+            'imagen': 'images/fotoperfil.jpg'
         }
         chofer_id_counter += 1
 

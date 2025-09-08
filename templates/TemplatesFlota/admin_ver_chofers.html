@@ -1,4 +1,5 @@
 {% extends 'TemplatesFlota/base.html' %}
+{% load static %}
 
 {% block title %}Ver Chofers{% endblock %}
 
@@ -12,6 +13,7 @@
 <table>
     <thead>
         <tr>
+            <th>Imagen</th>
             <th>ID</th>
             <th>Nombre</th>
             <th>Fecha Nacimiento</th>
@@ -23,6 +25,9 @@
     <tbody>
         {% for id, chofer in chofers.items %}
         <tr>
+            <td>
+                <img src="{% static 'images/fotoperfil.jpg' %}" alt="Foto de perfil" class="profile-img">
+            </td>
             <td>{{ chofer.id }}</td>
             <td>{{ chofer.nombre }}</td>
             <td>{{ chofer.fecha_nacimiento }}</td>
@@ -32,7 +37,7 @@
         </tr>
         {% empty %}
         <tr>
-            <td colspan="6">No hay chofers registrados.</td>
+            <td colspan="7">No hay chofers registrados.</td>
         </tr>
         {% endfor %}
     </tbody>

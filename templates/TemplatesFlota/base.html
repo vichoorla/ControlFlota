@@ -1,139 +1,67 @@
+
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Sistema de Gestión de Flota{% endblock %}</title>
+    <title>{% block title %}Control de Flota{% endblock %}</title>
     <style>
-         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
+        .profile-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ddd;
         }
-        .header {
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
+        .profile-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-        }
-        .header a {
-            color: white;
-            text-decoration: none;
-            margin-left: 15px;
-        }
-        .content {
-            padding: 20px;
-        }
-        .menu {
-            background-color: #eee;
-            padding: 10px;
+            gap: 15px;
             margin-bottom: 20px;
         }
-        .menu a {
-            margin-right: 15px;
-            text-decoration: none;
-            color: #333;
+        .profile-header img {
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            width: 80px;
+            height: 80px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-        table, th, td {
+        table th, table td {
             border: 1px solid #ddd;
-        }
-        th, td {
             padding: 8px;
             text-align: left;
         }
-        th {
+        table th {
             background-color: #f2f2f2;
         }
-        form {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"], input[type="password"], input[type="number"], input[type="date"], select, textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        input[type="submit"] {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-        .messages {
-            list-style: none;
-            padding: 0;
-        }
-        .messages li {
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-        }
-        .success {
-            background-color: #dff0d8;
-            color: #3c763d;
-        }
-        .error {
-            background-color: #f2dede;
-            color: #a94442;
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Sistema de Gestión de Flota</h1>
-        <div>
-            {% if request.session.usuario_autenticado %}
-                Bienvenido, {{ request.session.nombre_usuario }} | 
-                <a href="{% url 'logout' %}">Cerrar Sesión</a>
-            {% else %}
-                <a href="{% url 'login' %}">Iniciar Sesión</a>
-            {% endif %}
-        </div>
-    </div>
-
-    {% if request.session.usuario_autenticado %}
-    <div class="menu">
-        {% block menu %}{% endblock %}
-    </div>
-    {% endif %}
-
-    <div class="content">
-        {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-            <li class="{{ message.tags }}">{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-
-        {% block content %}{% endblock %}
-    </div>
+    <header>
+        <h1>Sistema de Control de Flota</h1>
+        <nav>
+            {% block menu %}
+            <-- Menú por defecto -->
+            {% endblock %}
+            <a href="{% url 'logout' %}">Cerrar Sesión</a>
+        </nav>
+    </header>
+    
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+    
+    <footer>
+        <p>&copy; 2023 Control de Flota</p>
+    </footer>
 </body>
 </html>
