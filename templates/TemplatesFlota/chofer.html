@@ -1,0 +1,37 @@
+<body class="container mt-5">
+    <div class="alert alert-succes display-1">Listado de Choferes</div>
+
+    {%if Choferes %}
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>RUT</th>
+                <th>Nombre</th>
+                <th>Fecha_Nacimiento</th>
+                <th>Telefono</th>
+                <th>Estado</th>
+                <th>Horas</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cho in Choferes%}
+            <tr>
+                <td scope="row">{{ cho.id }}</td>
+                <th>{{ cho.rut }}</th>
+                <td>{{ cho.nombre }}</td>
+                <td>{{ cho.Fecha_Nacimientoo }}</td>
+                <td>{{ cho.Telefono }}</td>
+                <td>{{ cho.Estado }}</td>
+                <td>{{ cho.Horas }}</td>
+                <td>{{ cho.Email }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <div class="alert alert-info">No hay Choferes</div>
+    {% endif%}
+</body>

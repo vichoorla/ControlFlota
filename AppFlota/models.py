@@ -23,3 +23,16 @@ class Mantencion(models.Model):
     Fecha_Mantencion = models.CharField(max_length=20)
     Lugar = models.CharField(max_length=60)
     Detalle = models.CharField(max_length=100)
+
+class Mecanico(models.Model):
+    Rut = models.CharField(max_length=10)
+    Fecha_Nacimiento = models.CharField(max_length=10)
+    Telefono = models.CharField(max_length=10)
+    Email = models.EmailField()
+    Estado = models.BooleanField(default=True)
+    Taller = models.CharField(max_length=50)
+    Horas = models.CharField(max_length=100)
+    Empresa = models.CharField(max_length=100)
+
+class Tipo_Vehiculo(models.Model):
+    Tipo = models.CharField(max_length=40)

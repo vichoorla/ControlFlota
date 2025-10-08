@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib import messages
+from AppFlota.models import Chofer, Combustible, Mantencion, Mecanico, Tipo_Vehiculo
 
 vehiculos = {}
 chofers = {}
@@ -317,3 +318,31 @@ def mecanico_ver_mantenciones(request):
     return render(request, 'TemplatesFlota/mecanico_ver_mantenciones.html', {
         'mantenciones': mantenciones
     })
+
+# Clases de los models.
+
+def ChoferData(request):
+    Chofer = Chofer.objects.all()
+    data = {'Chofer' : Chofer}
+    return render(request, 'mhofer.html', data)
+
+def MantencionData(request):
+    Mantencion = Mantencion.objects.all()
+    data = {'Mantencion' : Mantencion}
+    return render(request, 'mantencion.html', data)
+
+def CombustibleData(request):
+    Combustible = Combustible.objects.all()
+    data = {'Combustible' : Combustible}
+    return render(request, 'combustible.html', data)
+
+def MecanicoData(request):
+    Mecanico = Mecanico.objects.all()
+    data = {'Mecanico' : Mecanico}
+    return render(request, 'mecanico.html', data)
+
+def Tipo_VehiculoData(request):
+    Tipo_Vehiculo = Tipo_Vehiculo.objects.all()
+    data = {'Tipo_Vehiculo' : Tipo_Vehiculo}
+    return render(request, 'tipoVehiculo.html', data)
+
