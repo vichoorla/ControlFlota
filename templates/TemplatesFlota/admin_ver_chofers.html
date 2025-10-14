@@ -23,17 +23,17 @@
         </tr>
     </thead>
     <tbody>
-        {% for id, chofer in chofers.items %}
+        {% for chofer in chofers %}
         <tr>
             <td>
                 <img src="{% static 'images/fotoperfil.jpg' %}" alt="Foto de perfil" class="profile-img">
             </td>
-            <td>{{ chofer.id }}</td>
-            <td>{{ chofer.nombre }}</td>
-            <td>{{ chofer.fecha_nacimiento }}</td>
-            <td>{{ chofer.telefono }}</td>
-            <td>{{ chofer.estado }}</td>
-            <td>{{ chofer.horas }}</td>
+            <td>{{ chofer.BUTChofer }}</td>
+            <td>{{ chofer.Nombre }}</td>
+            <td>{{ chofer.Fecha_Nacimiento }}</td>
+            <td>{{ chofer.Telefono }}</td>
+            <td>{{ chofer.Estado }}</td>
+            <td>{{ chofer.Horas }}</td>
         </tr>
         {% empty %}
         <tr>

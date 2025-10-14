@@ -13,7 +13,12 @@
     {% csrf_token %}
     <div class="form-group">
         <label for="tipo_mantencion">Tipo de Mantención:</label>
-        <input type="text" id="tipo_mantencion" name="tipo_mantencion" required>
+        <select id="tipo_mantencion" name="tipo_mantencion" required>
+            <option value="Preventiva">Preventiva</option>
+            <option value="Correctiva">Correctiva</option>
+            <option value="Predictiva">Predictiva</option>
+            <option value="Rutina">Rutina</option>
+        </select>
     </div>
     
     <div class="form-group">
@@ -23,17 +28,7 @@
     
     <div class="form-group">
         <label for="descripcion">Descripción:</label>
-        <textarea id="descripcion" name="descripcion" required></textarea>
-    </div>
-    
-    <div class="form-group">
-        <label for="vehiculo_id">Vehículo:</label>
-        <select id="vehiculo_id" name="vehiculo_id" required>
-            <option value="">Seleccione un vehículo</option>
-            {% for id, vehiculo in vehiculos.items %}
-            <option value="{{ vehiculo.id }}">{{ vehiculo.patente }} - {{ vehiculo.marca }} {{ vehiculo.modelo }}</option>
-            {% endfor %}
-        </select>
+        <textarea id="descripcion" name="descripcion" rows="4" required></textarea>
     </div>
     
     <input type="submit" value="Agregar Mantención">

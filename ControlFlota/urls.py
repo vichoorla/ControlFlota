@@ -19,6 +19,7 @@ from django.urls import path
 from AppFlota import views
 
 urlpatterns = [
+    path('admin/', admin.site.urls),
     path('', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     
