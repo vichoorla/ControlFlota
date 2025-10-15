@@ -16,6 +16,7 @@ from pathlib import Path
 import os
 import pymysql
 pymysql.install_as_MySQLdb()
+from . import fix_mariadb 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -83,9 +84,15 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'controlflota',
-        'USER' : 'root',
-        'PASSWORD' : '123456'
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
+}
+
+MIGRATION_MODULES = {
+    'AppFlota': None,
 }
 
 

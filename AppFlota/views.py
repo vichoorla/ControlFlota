@@ -1,44 +1,31 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib import messages
-from AppFlota.models import Chofer, Combustible, Mantencion, Mecanico, Tipo_Vehiculo
+from .models import Vehiculo, Chofer, Combustible, Mantencion, Mecanico, Usuario
 
-vehiculos = {}
-chofers = {}
-mecanicos = {}
-combustibles = {}
-mantenciones = {}
-usuarios = {
-    'admin': {'password': 'admin123', 'tipo': 'admin', 'nombre': 'Administrador'},
-    'chofer': {'password': 'chofer123', 'tipo': 'chofer', 'nombre': 'Juan Chofer'},
-    'mecanico': {'password': 'mecanico123', 'tipo': 'mecanico', 'nombre': 'Pedro Mecánico'}
-}
-
-# Contadores para IDs
-vehiculo_id_counter = 1
-chofer_id_counter = 1
-mecanico_id_counter = 1
-combustible_id_counter = 1
-mantencion_id_counter = 1
 
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
         
-        if username in usuarios and usuarios[username]['password'] == password:
-            request.session['usuario_autenticado'] = True
-            request.session['tipo_usuario'] = usuarios[username]['tipo']
-            request.session['username'] = username
-            request.session['nombre_usuario'] = usuarios[username]['nombre']
+        try:
+            usuario = Usuario.objects.get(username=username, password=password)
             
-            if usuarios[username]['tipo'] == 'admin':
+            # Login exitoso
+            request.session['usuario_autenticado'] = True
+            request.session['tipo_usuario'] = usuario.cargo
+            request.session['username'] = usuario.username
+            request.session['nombre_usuario'] = usuario.nombre
+            
+            if usuario.cargo == 'admin':
                 return redirect('admin_dashboard')
-            elif usuarios[username]['tipo'] == 'chofer':
+            elif usuario.cargo == 'chofer':
                 return redirect('chofer_dashboard')
-            elif usuarios[username]['tipo'] == 'mecanico':
+            elif usuario.cargo == 'mecanico':
                 return redirect('mecanico_dashboard')
-        else:
+                
+        except Usuario.DoesNotExist:
             messages.error(request, 'Usuario o contraseña incorrectos')
     
     return render(request, 'TemplatesFlota/login.html')
@@ -89,38 +76,35 @@ def mecanico_dashboard(request):
 # Finciones para Admin
 @requiere_autenticacion
 @requiere_tipo_usuario(['admin'])
-@requiere_autenticacion
-@requiere_tipo_usuario(['admin'])
 def admin_agregar_chofer(request):
-    global chofer_id_counter
-
     if request.method == 'POST':
+        but_chofer = request.POST.get('but_chofer')
         nombre = request.POST.get('nombre')
         fecha_nacimiento = request.POST.get('fecha_nacimiento')
         telefono = request.POST.get('telefono')
         estado = request.POST.get('estado')
         horas = request.POST.get('horas')
 
-        chofer_id = chofer_id_counter
-        chofers[chofer_id] = {
-            'id': chofer_id,
-            'nombre': nombre,
-            'fecha_nacimiento': fecha_nacimiento,
-            'telefono': telefono,
-            'estado': estado,
-            'horas': horas,
-            'imagen': 'images/fotoperfil.jpg'
-        }
-        chofer_id_counter += 1
+        try:
+            Chofer.objects.create(
+                RUTChofer=but_chofer,
+                Nombre=nombre,
+                Fecha_Nacimiento=fecha_nacimiento,
+                Telefono=telefono,
+                Estado=estado,
+                Horas=horas
+            )
+            messages.success(request, 'Chofer agregado correctamente')
+            return redirect('admin_ver_chofers')
+        except:
+            messages.error(request, 'Error al agregar chofer')
 
-        messages.success(request, 'Chofer agregado correctamente')
-        return redirect('admin_ver_chofers')
-    
     return render(request, 'TemplatesFlota/admin_agregar_chofer.html')
 
 @requiere_autenticacion
 @requiere_tipo_usuario(['admin'])
 def admin_ver_chofers(request):
+    chofers = Chofer.objects.all()
     return render(request, 'TemplatesFlota/admin_ver_chofers.html', {
         'chofers': chofers
     })
@@ -128,8 +112,6 @@ def admin_ver_chofers(request):
 @requiere_autenticacion
 @requiere_tipo_usuario(['admin'])
 def admin_agregar_vehiculo(request):
-    global vehiculo_id_counter
-
     if request.method == 'POST':
         patente = request.POST.get('patente')
         vin = request.POST.get('vin')
@@ -141,38 +123,47 @@ def admin_agregar_vehiculo(request):
         revision_tecnica = request.POST.get('revision_tecnica')
         permiso_circulacion = request.POST.get('permiso_circulacion')
         gps = request.POST.get('gps')
+        kilometraje = request.POST.get('kilometraje')
+        estanque = request.POST.get('estanque')
+        tonelaje = request.POST.get('tonelaje')
+        asignacion = request.POST.get('asignacion')
         
-        vehiculo_id = vehiculo_id_counter
-        vehiculos[vehiculo_id] = {
-            'id': vehiculo_id,
-            'patente': patente,
-            'vin': vin,
-            'marca': marca,
-            'modelo': modelo,
-            'año': año,
-            'motor': motor,
-            'seguro': seguro,
-            'revision_tecnica': revision_tecnica,
-            'permiso_circulacion': permiso_circulacion,
-            'gps': gps
-        }
-        vehiculo_id_counter += 1
-
-        messages.success(request, 'Vehículo agregado correctamente')
-        return redirect('admin_ver_vehiculos')
+        try:
+            Vehiculo.objects.create(
+                Patente=patente,
+                VIN=vin,
+                Marca=marca,
+                Modelo=modelo,
+                Año=año,
+                Motor=motor,
+                Seguro=seguro,
+                Revision_Tecnica=revision_tecnica,
+                Permiso_Circulacion=permiso_circulacion,
+                GPS=gps,
+                kilometraje=kilometraje,
+                estanque=estanque,
+                tonelaje=tonelaje,
+                asignacion=asignacion
+            )
+            messages.success(request, 'Vehículo agregado correctamente')
+            return redirect('admin_ver_vehiculos')
+        except:
+            messages.error(request, 'Error al agregar vehículo')
     
     return render(request, 'TemplatesFlota/admin_agregar_vehiculo.html')
 
 @requiere_autenticacion
 @requiere_tipo_usuario(['admin'])
 def admin_ver_vehiculos(request):
-    return render(request, 'TemplatesFlota/admin_ver_vehiculos.html',{
+    vehiculos = Vehiculo.objects.all()
+    return render(request, 'TemplatesFlota/admin_ver_vehiculos.html', {
         'vehiculos': vehiculos
     })
 
 @requiere_autenticacion
 @requiere_tipo_usuario(['admin'])
 def admin_ver_combustible(request):
+    combustibles = Combustible.objects.all()
     return render(request, 'TemplatesFlota/admin_ver_combustible.html', {
         'combustibles': combustibles
     })
@@ -180,6 +171,7 @@ def admin_ver_combustible(request):
 @requiere_autenticacion
 @requiere_tipo_usuario(['admin'])
 def admin_ver_mantenciones(request):
+    mantenciones = Mantencion.objects.all()
     return render(request, 'TemplatesFlota/admin_ver_mantenciones.html', {
         'mantenciones': mantenciones
     })
@@ -188,6 +180,7 @@ def admin_ver_mantenciones(request):
 @requiere_autenticacion
 @requiere_tipo_usuario(['chofer'])
 def chofer_ver_vehiculos(request):
+    vehiculos = Vehiculo.objects.all()
     return render(request, 'TemplatesFlota/chofer_ver_vehiculos.html', {
         'vehiculos': vehiculos
     })
@@ -195,7 +188,6 @@ def chofer_ver_vehiculos(request):
 @requiere_autenticacion
 @requiere_tipo_usuario(['chofer'])
 def chofer_agregar_combustible(request):
-    global combustible_id_counter
     if request.method == 'POST':
         tipo_combustible = request.POST.get('tipo_combustible')
         fecha_recarga = request.POST.get('fecha_recarga')
@@ -203,32 +195,24 @@ def chofer_agregar_combustible(request):
         encargado = request.POST.get('encargado')
         cantidad_estanque = request.POST.get('cantidad_estanque')
         recargar = request.POST.get('recargar')
-        vehiculo_id = request.POST.get('vehiculo_id')
 
-        combustible_id = combustible_id_counter
-        combustibles[combustible_id] = {
-            'id': combustible_id,
-            'tipo_combustible': tipo_combustible,
-            'fecha_recarga': fecha_recarga,
-            'lugar': lugar,
-            'encargado': encargado,
-            'cantidad_estanque': cantidad_estanque,
-            'recargar': recargar,
-            'vehiculo_id': vehiculo_id,
-            'registrado_por': request.session.get('nombre_usuario')
-        }
-        combustible_id_counter += 1
-
+        Combustible.objects.create(
+            Tipo_Combustible=tipo_combustible,
+            Fecha_Recarga=fecha_recarga,
+            Lugar=lugar,
+            Encargado=encargado,
+            Cantidad_Estanque=cantidad_estanque,
+            Recargar=recargar
+        )
         messages.success(request, 'Registro de combustible agregado correctamente')
         return redirect('chofer_ver_combustible')
     
-    return render(request, 'TemplatesFlota/chofer_agregar_combustible.html', {
-        'vehiculos': vehiculos
-    })
+    return render(request, 'TemplatesFlota/chofer_agregar_combustible.html')
 
 @requiere_autenticacion
 @requiere_tipo_usuario(['chofer'])
 def chofer_ver_combustible(request):
+    combustibles = Combustible.objects.all()
     return render(request, 'TemplatesFlota/chofer_ver_combustible.html', {
         'combustibles': combustibles
     })
@@ -237,6 +221,7 @@ def chofer_ver_combustible(request):
 @requiere_autenticacion
 @requiere_tipo_usuario(['mecanico'])
 def mecanico_ver_vehiculos(request):
+    vehiculos = Vehiculo.objects.all()
     return render(request, 'TemplatesFlota/mecanico_ver_vehiculos.html', {
         'vehiculos': vehiculos
     })
@@ -244,8 +229,6 @@ def mecanico_ver_vehiculos(request):
 @requiere_autenticacion
 @requiere_tipo_usuario(['mecanico'])
 def mecanico_agregar_combustible(request):
-    global combustible_id_counter
-
     if request.method == 'POST':
         tipo_combustible = request.POST.get('tipo_combustible')
         fecha_recarga = request.POST.get('fecha_recarga')
@@ -253,32 +236,24 @@ def mecanico_agregar_combustible(request):
         encargado = request.POST.get('encargado')
         cantidad_estanque = request.POST.get('cantidad_estanque')
         recargar = request.POST.get('recargar')
-        vehiculo_id = request.POST.get('vehiculo_id')
 
-        combustible_id = combustible_id_counter
-        combustibles[combustible_id] = {
-            'id': combustible_id,
-            'tipo_combustible': tipo_combustible,
-            'fecha_recarga': fecha_recarga,
-            'lugar': lugar,
-            'encargado': encargado,
-            'cantidad_estanque': cantidad_estanque,
-            'recargar': recargar,
-            'vehiculo_id': vehiculo_id,
-            'registrado_por': request.session.get('nombre_usuario')
-        }
-        combustible_id_counter += 1
-
+        Combustible.objects.create(
+            Tipo_Combustible=tipo_combustible,
+            Fecha_Recarga=fecha_recarga,
+            Lugar=lugar,
+            Encargado=encargado,
+            Cantidad_Estanque=cantidad_estanque,
+            Recargar=recargar
+        )
         messages.success(request, 'Registro de combustible agregado correctamente')
         return redirect('mecanico_ver_combustible')
     
-    return render(request, 'TemplatesFlota/mecanico_agregar_combustible.html', {
-        'vehiculos': vehiculos
-    })
+    return render(request, 'TemplatesFlota/mecanico_agregar_combustible.html')
 
 @requiere_autenticacion
 @requiere_tipo_usuario(['mecanico'])
 def mecanico_ver_combustible(request):
+    combustibles = Combustible.objects.all()
     return render(request, 'TemplatesFlota/mecanico_ver_combustible.html', {
         'combustibles': combustibles
     })
@@ -286,35 +261,32 @@ def mecanico_ver_combustible(request):
 @requiere_autenticacion
 @requiere_tipo_usuario(['mecanico'])
 def mecanico_agregar_mantencion(request):
-    global mantencion_id_counter
-
     if request.method == 'POST':
         tipo_mantencion = request.POST.get('tipo_mantencion')
         fecha = request.POST.get('fecha')
+        lugar = request.POST.get('lugar')
         descripcion = request.POST.get('descripcion')
-        vehiculo_id = request.POST.get('vehiculo_id')
 
-        mantencion_id = mantencion_id_counter
-        mantenciones[mantencion_id] = {
-            'id': mantencion_id,
-            'tipo_mantencion': tipo_mantencion,
-            'fecha': fecha,
-            'descripcion': descripcion,
-            'vehiculo_id': vehiculo_id,
-            'realizado_por': request.session.get('nombre_usuario')
-        }
-        mantencion_id_counter += 1
+        # último ID + 1
+        ultima_mantencion = Mantencion.objects.order_by('-ID_Mantencion').first()
+        nuevo_id = ultima_mantencion.ID_Mantencion + 1 if ultima_mantencion else 1
 
+        Mantencion.objects.create(
+            ID_Mantencion=nuevo_id,
+            Tipo_Mantencion=tipo_mantencion,
+            Lugar=lugar,
+            Fecha=fecha,
+            Descripcion=descripcion
+        )
         messages.success(request, 'Mantención agregada correctamente')
         return redirect('mecanico_ver_mantenciones')
     
-    return render(request, 'TemplatesFlota/mecanico_agregar_mantencion.html', {
-        'vehiculos': vehiculos
-    })
+    return render(request, 'TemplatesFlota/mecanico_agregar_mantencion.html')
 
 @requiere_autenticacion
 @requiere_tipo_usuario(['mecanico'])
 def mecanico_ver_mantenciones(request):
+    mantenciones = Mantencion.objects.all()
     return render(request, 'TemplatesFlota/mecanico_ver_mantenciones.html', {
         'mantenciones': mantenciones
     })
