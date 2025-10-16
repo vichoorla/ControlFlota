@@ -9,3 +9,5 @@ admin.site.register(Combustible)
 admin.site.register(Mantencion)
 admin.site.register(Mecanico)
 admin.site.register(TipoVehiculo)
+
+

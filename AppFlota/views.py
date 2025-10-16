@@ -296,7 +296,7 @@ def mecanico_ver_mantenciones(request):
 def ChoferData(request):
     Chofer = Chofer.objects.all()
     data = {'Chofer' : Chofer}
-    return render(request, 'mhofer.html', data)
+    return render(request, 'chofer.html', data)
 
 def MantencionData(request):
     Mantencion = Mantencion.objects.all()

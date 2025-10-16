@@ -20,10 +20,6 @@ from AppFlota import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('chofer.html/',views.ChoferData),
-    path('mantencion.html/', views.MantencionData),
-    path('combustible.html/', views.CombustibleData),
-    path('tipoVehiculo.html/', views.Tipo_VehiculoData),
     path('', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     
