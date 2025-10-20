@@ -60,7 +60,7 @@ Roles y Permisos
   - Visualización de registros de combustible
   - Gestión de mantenciones (agregar/ver)
 
-Modelos de Datos (Almacenamiento en Memoria)
+Modelos de Datos
 
 Vehículos
 - Campos: patente, VIN, marca, modelo, año, motor, seguro, revisión técnica, permiso circulación, GPS
@@ -83,7 +83,6 @@ Templates HTML Disponibles
 - admin_dashboard.html - Panel administrador
 - chofer_dashboard.html - Panel chofer
 - mecanico_dashboard.html - Panel mecánico
-- administracion.html - Panel administración (alternativo)
 
 3. Páginas de Gestión
 - Múltiples templates para CRUD de cada entidad
@@ -96,18 +95,10 @@ Ejecutar
    - URL: http://localhost:8000/login/
    - Usar credenciales predefinidas
 
-Consideraciones
-
-- Almacenamiento en memoria: Los datos se pierden al reiniciar el servidor
-- Modo desarrollo: No usar en producción (DEBUG = True)
-- Seguridad: Implementar base de datos real para entorno productivo
-- Validaciones: Añadir validaciones adicionales para datos de entrada
 
 Próximos Pasos Recomendados
 
-1. Implementar modelos Django con base de datos real
-2. Añadir validaciones de formularios
-3. Implementar tests automatizados
-4. Mejorar interfaz de usuario
-5. Añadir sistema de reportes
-6. Implementar API REST
+1. Implementar tests automatizados
+2. Mejorar interfaz de usuario
+3. Añadir sistema de reportes
+4. Implementar API REST
