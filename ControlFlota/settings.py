@@ -84,7 +84,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'controlflota',
         'USER' : 'root',
-        'PASSWORD' : '123456'
+        'PASSWORD' : '',
+        'HOST' : 'localhost',
+        'PORT' : '3306'
     }
 }
 
