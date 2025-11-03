@@ -85,14 +85,13 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'controlflota',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': '123456',
         'HOST': 'localhost',
         'PORT': '3306',
     }
 }
 
 MIGRATION_MODULES = {
-    'AppFlota': None,
 }
 
 

@@ -58,7 +58,8 @@ class RUTField(models.CharField):
 
 class Vehiculo(models.Model):
    patente = models.CharField(
-       max_length=6,
+       max_length=8,
+       primary_key=True,
        validators=[
            RegexValidator(
                regex=r'^[A-Z]{2}\d{4}$|^[A-Z]{2}\d{3}[A-Z]{2}$',
@@ -80,13 +81,10 @@ class Vehiculo(models.Model):
    marca = models.CharField(max_length=50)
    modelo = models.CharField(max_length=50)
 
-   año = models.CharField(
-       max_length=4,
+   año = models.PositiveSmallIntegerField(
        validators=[
-            RegexValidator(
-                regex=r'^(19|20)\d{2}$',
-                message='Año debe estar entre 1900 y 2099'
-            )
+           MinValueValidator(1900),
+           MaxValueValidator(date.today().year + 2)
        ]
    )
    motor = models.CharField(max_length=50)
@@ -119,7 +117,21 @@ class Vehiculo(models.Model):
             MinValueValidator(0.1, message='Tonelaje mínimo: 0.1 toneladas'),
             MaxValueValidator(100, message='Tonelaje máximo: 100 toneladas')
         ])
-   asignacion = models.CharField(max_length=50)
+   Tipo = models.ForeignKey(
+        'TipoVehiculo',
+        on_delete=models.PROTECT,
+        related_name='vehiculos'
+    ) 
+   chofer_asignado = models.ForeignKey(
+       'chofer',
+       on_delete=models.SET_NULL,
+       null=True,
+       blank=True,
+       related_name='vehiculos_asignados'
+   )
+
+   def __str__(self):
+        return self.nombre
 
    def clean(self):
        super().clean()
@@ -133,6 +145,7 @@ class Vehiculo(models.Model):
                raise ValidationError({'año': f'El año no puede ser mayor a {año_actual + 2}'})
        except (ValueError, TypeError):
            raise ValidationError({'año': 'Año debe ser un número válido'})
+
 
 class Usuario(models.Model):
     id = models.AutoField(primary_key=True)
@@ -191,6 +204,18 @@ class Usuario(models.Model):
 class Mantencion(models.Model):
     ID_Mantencion = models.AutoField(primary_key=True)
 
+    vehiculo = models.ForeignKey(
+        'Vehiculo',
+        on_delete=models.PROTECT,
+        related_name='mantenimientos'
+    )
+
+    mecanico = models.ForeignKey(
+        'Mecanico',
+        on_delete=models.PROTECT,
+        related_name='mantenimientos_realizados'
+    )
+
     Tipo_Mantencion = models.CharField(        
         max_length=45,
         choices=[
@@ -211,10 +236,15 @@ class Mantencion(models.Model):
                 message='La descripción debe tener al menos 10 caracteres'
             )
         ])
+    def __str__(self):
+        return self.Tipo_Mantencion
 
 class Mecanico(models.Model):
+    usuario = models.OneToOneField(Usuario,
+    on_delete= models.CASCADE, primary_key=True)
+
     RUT_Mecanico = RUTField(
-        primary_key=True,
+        unique=True,
         validators=[
             RegexValidator(
                 regex=r'^\d{1,2}\.\d{3}\.\d{3}-[0-9kK]$|^\d{7,8}-[0-9kK]$',
@@ -335,10 +365,23 @@ class Mecanico(models.Model):
         return f"{self.RUT_Mecanico} - {self.Nombre}"
 
 class TipoVehiculo(models.Model):
-    ID_Tipo = models.IntegerField(primary_key=True)
-    Tipo = models.CharField(max_length=45)
+    ID_Tipo = models.AutoField(primary_key=True)
+    nombre = models.CharField(
+        max_length=45,
+        unique=True)
+    
+    def __str__(self):
+        return self.nombre
 
 class Combustible(models.Model):
+    id = models.AutoField(primary_key=True)
+
+    vehiculo = models.ForeignKey(
+        'Vehiculo',
+        on_delete=models.CASCADE,
+        related_name='recargas_combustible'
+    )
+
     Tipo_Combustible = models.CharField(        
         max_length=45,
         choices=[
@@ -352,7 +395,6 @@ class Combustible(models.Model):
     
     Fecha_Recarga = models.DateField()
     Lugar = models.CharField(max_length=45)
-    Encargado = models.CharField(max_length=45)
 
     Cantidad_Estanque = models.DecimalField(
         max_digits=5,
@@ -368,10 +410,16 @@ class Combustible(models.Model):
             ('Si', 'Si'),
             ('No', 'No')
         ])
+    
+    def __str__(self):
+        return self.Tipo_Combustible
 
 class Chofer(models.Model):
+    usuario = models.OneToOneField(Usuario,
+    on_delete= models.CASCADE, primary_key=True)
+
     RUTChofer = RUTField(
-        primary_key=True,
+        unique=True,
         validators=[
             RegexValidator(
                 regex=r'^\d{1,2}\.\d{3}\.\d{3}-[0-9kK]$|^\d{7,8}-[0-9kK]$',
@@ -484,3 +532,6 @@ class Chofer(models.Model):
         # Validar antes de guardar
         self.full_clean()
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.Nombre
