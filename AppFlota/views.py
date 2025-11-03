@@ -2,6 +2,29 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib import messages
 from .models import Vehiculo, Chofer, Combustible, Mantencion, Mecanico, Usuario
+from rest_framework import viewsets
+from .serializers import VehiculoSerializer,ChoferSerializer,CombustibleSerializer,MantencionSerializer,MecanicoSerializer
+
+class VehiculoSerializer(viewsets.ModelViewSet):
+    queryset = VehiculoSerializer.objects.all()
+    serializer_class = VehiculoSerializer
+
+class ChoferSerializer(viewsets.ModelViewSet):
+    queryset = ChoferSerializer.objects.all()
+    serializer_class = ChoferSerializer
+
+class CombustibleSerializer(viewsets.ModelViewSet):
+    quaryset = CombustibleSerializer.objects.all()
+    serializer_class = CombustibleSerializer
+
+class MantencionSerializer(viewsets.ModelViewSet):
+    queryset = MantencionSerializer.objects.all()
+    serializer_class = MantencionSerializer
+
+class MecanicoSerializer(viewsets.ModelViewSet):
+    queryset = MecanicoSerializer.objects.all()
+    serializer_class = MecanicoSerializer
+
 
 
 def login_view(request):

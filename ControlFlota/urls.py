@@ -15,10 +15,21 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from AppFlota import views
+from rest_framework.routers import DefaultRouter
+from AppFlota import VehiculoSerilizer,ChoferSerializer,CombustibleSerializer,MantencionSerializer,MecanicoSerializer
+
+router = DefaultRouter()
+router.register(r'vehiculos',VehiculoSerilizer, basename='')
+router.register(r'choferes',ChoferSerializer, basename='')
+router.register(r'combustibles',CombustibleSerializer, basename='')
+router.register(r'mantenciones',MantencionSerializer, basename='')
+router.register(r'mecanicos',MecanicoSerializer, basename='')
 
 urlpatterns = [
+
+
     path('admin/', admin.site.urls),
     path('', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
