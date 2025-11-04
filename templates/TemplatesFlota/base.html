@@ -1,206 +1,94 @@
 {% load static %}
+{% load material_frontend %}
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Sistema de Gestión de Flota{% endblock %}</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        .header {
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .header a {
-            color: white;
-            text-decoration: none;
-            margin-left: 15px;
-        }
-        .content {
-            padding: 20px;
-            flex: 1;
-        }
-        .menu {
-            background-color: #eee;
-            padding: 10px;
-            margin-bottom: 20px;
-        }
-        .menu a {
-            margin-right: 15px;
-            text-decoration: none;
-            color: #333;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        form {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"], input[type="password"], input[type="number"], 
-        input[type="date"], select, textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        input[type="submit"] {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-        .messages {
-            list-style: none;
-            padding: 0;
-        }
-        .messages li {
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-        }
-        .success {
-            background-color: #dff0d8;
-            color: #3c763d;
-        }
-        .error {
-            background-color: #f2dede;
-            color: #a94442;
-        }
-        /* Nuevos estilos para imágenes y perfil */
-        .profile-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .profile-img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #fff;
-        }
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #e9ecef;
-            border-radius: 5px;
-        }
-        .profile-header img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #ddd;
-        }
-        table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        footer {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 15px;
-            margin-top: auto;
-        }
-        footer p {
-            margin: 0;
-        }
-        /* Estilos para el menú de navegación */
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-        }
-        .main-nav {
-            display: flex;
-            gap: 20px;
-        }
-    </style>
+    
+    {% frontend_css %}
 </head>
 <body>
-    <div class="header">
-        <h1>Sistema de Gestión de Flota</h1>
-        <div class="profile-container">
-            {% if request.session.usuario_autenticado %}
-                <!-- Imagen de perfil - puedes cambiar la ruta según necesites -->
-                <img src="{% static 'images/user-profile.png' %}" alt="Perfil" class="profile-img">
-                <div>
-                    Bienvenido, {{ request.session.nombre_usuario }} | 
-                    <a href="{% url 'logout' %}">Cerrar Sesión</a>
+
+    <header>
+        <nav class="nav-wrapper">
+            <a href="#" class="brand-logo" style="padding-left: 20px;">Gestión de Flota</a>
+            <ul id="nav-mobile" class="right">
+                {% if request.session.usuario_autenticado %}
+                    <li><a href="{% url 'logout' %}">Cerrar Sesión ({{ request.session.nombre_usuario }})</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Iniciar Sesión</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        {% if request.session.usuario_autenticado %}
+        <ul id="slide-out" class="sidenav sidenav-fixed">
+            <li>
+                <div class="user-view">
+                    <div class="background" style="background-color: #333;">
+                    </div>
+                    <a href="#user"><img class="circle" src="{% static 'images/fotoperfil.jpg' %}"></a>
+                    <a href="#name"><span class="white-text name">{{ request.session.nombre_usuario }}</span></a>
+                    <a href="#email"><span class="white-text email">Rol: {{ request.session.tipo_usuario|title }}</span></a>
                 </div>
-            {% else %}
-                <a href="{% url 'login' %}">Iniciar Sesión</a>
+            </li>
+            
+            {% if request.session.tipo_usuario == 'admin' %}
+                <li><a href="{% url 'admin_dashboard' %}"><i class="material-icons">dashboard</i>Panel Admin</a></li>
+                <li><div class="divider"></div></li>
+                <li><a class="subheader">Gestión</a></li>
+                <li><a href="{% url 'admin_agregar_chofer' %}">Agregar Chofer</a></li>
+                <li><a href="{% url 'admin_ver_chofers' %}">Ver Chofers</a></li>
+                <li><a href="{% url 'admin_agregar_vehiculo' %}">Agregar Vehículo</a></li>
+                <li><a href="{% url 'admin_ver_vehiculos' %}">Ver Vehículos</a></li>
+                <li><div class="divider"></div></li>
+                <li><a class="subheader">Reportes</a></li>
+                <li><a href="{% url 'admin_ver_combustible' %}">Ver Combustible</a></li>
+                <li><a href="{% url 'admin_ver_mantenciones' %}">Ver Mantenciones</a></li>
+
+            {% elif request.session.tipo_usuario == 'chofer' %}
+                <li><a href="{% url 'chofer_dashboard' %}"><i class="material-icons">dashboard</i>Panel Chofer</a></li>
+                <li><div class="divider"></div></li>
+                <li><a href="{% url 'chofer_ver_vehiculos' %}">Ver Vehículos</a></li>
+                <li><a href="{% url 'chofer_agregar_combustible' %}">Agregar Combustible</a></li>
+                <li><a href="{% url 'chofer_ver_combustible' %}">Ver Combustible</a></li>
+
+            {% elif request.session.tipo_usuario == 'mecanico' %}
+                <li><a href="{% url 'mecanico_dashboard' %}"><i class="material-icons">dashboard</i>Panel Mecánico</a></li>
+                <li><div class="divider"></div></li>
+                <li><a href="{% url 'mecanico_ver_vehiculos' %}">Ver Vehículos</a></li>
+                <li><a href="{% url 'mecanico_agregar_mantencion' %}">Agregar Mantención</a></li>
+                <li><a href="{% url 'mecanico_ver_mantenciones' %}">Ver Mantenciones</a></li>
+                <li><a href="{% url 'mecanico_agregar_combustible' %}">Agregar Combustible</a></li>
+                <li><a href="{% url 'mecanico_ver_combustible' %}">Ver Combustible</a></li>
             {% endif %}
-        </div>
-    </div>
-
-    {% if request.session.usuario_autenticado %}
-    <div class="menu">
-        {% block menu %}{% endblock %}
-    </div>
-    {% endif %}
-
-    <div class="content">
-        {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-            <li class="{{ message.tags }}">{{ message }}</li>
-            {% endfor %}
         </ul>
+        <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
         {% endif %}
+    </header>
 
-        {% block content %}{% endblock %}
-    </div>
+    <main style="padding-left: 300px;">
+        <div class="container" style="width: 90%; max-width: none;">
+            {% if messages %}
+                {% for message in messages %}
+                <script>
+                    M.toast({html: '{{ message }}', classes: '{{ message.tags }}'});
+                </script>
+                {% endfor %}
+            {% endif %}
+            
+            {% block content %}{% endblock %}
+        </div>
+    </main>
 
-    <footer>
-        <p>&copy; 2024 Sistema de Gestión de Flota. Todos los derechos reservados.</p>
-    </footer>
+    {% frontend_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            M.AutoInit();
+        });
+    </script>
 </body>
 </html>

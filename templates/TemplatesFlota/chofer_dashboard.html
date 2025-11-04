@@ -3,19 +3,24 @@
 
 {% block title %}Panel de Chofer{% endblock %}
 
-{% block menu %}
-    <a href="{% url 'chofer_ver_vehiculos' %}">Ver Vehículos</a>
-    <a href="{% url 'chofer_agregar_combustible' %}">Agregar Combustible</a>
-    <a href="{% url 'chofer_ver_combustible' %}">Ver Combustible</a>
-{% endblock %}
-
 {% block content %}
 <h2>Panel de Chofer</h2>
-<div class="profile-header">
-    <img src="{% static 'images/fotoperfil.jpg' %}" alt="Foto de perfil">
+
+<div class="card-panel" style="display: flex; align-items: center; gap: 20px;">
+    <img src="{% static 'images/fotoperfil.jpg' %}" alt="Foto de perfil" style="width: 80px; height: 80px; border-radius: 50%;">
     <div>
-        <p>Bienvenido, {{ nombre_usuario }}</p>
-        <p>Rol: Chofer</p>
+        <h5>Bienvenido, {{ nombre_usuario }}</h5>
+        <p style="color: #555;">Rol: Chofer</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12 m6">
+        <div class="card-panel blue lighten-4">
+            <span class="blue-text text-darken-2">
+                Aquí puedes poner información rápida, como tu vehículo asignado.
+            </span>
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -2,7 +2,10 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib import messages
 from .models import Vehiculo, Chofer, Combustible, Mantencion, Mecanico, Usuario
+from .forms import VehiculoForm, ChoferForm, CombustibleForm, MantencionForm, UsuarioForm
+from django.db import transaction
 
+# --- Vistas de Login y Dashboards (Sin cambios) ---
 
 def login_view(request):
     if request.method == 'POST':
@@ -21,6 +24,18 @@ def login_view(request):
             if usuario.cargo == 'admin':
                 return redirect('admin_dashboard')
             elif usuario.cargo == 'chofer':
+                # NOTA: Tu template original de agregar combustible usaba 
+                # request.session.Vehiculo
+                # Debes agregar la lógica para guardar el vehículo del chofer en la sesión aquí.
+                # Ejemplo (si el chofer solo tiene UN vehículo):
+                try:
+                    chofer_obj = Chofer.objects.get(usuario=usuario)
+                    vehiculo = Vehiculo.objects.filter(chofer_asignado=chofer_obj).first()
+                    if vehiculo:
+                        request.session['Vehiculo'] = vehiculo.patente
+                except Chofer.DoesNotExist:
+                    pass # El chofer no existe como tal en la tabla Chofer
+
                 return redirect('chofer_dashboard')
             elif usuario.cargo == 'mecanico':
                 return redirect('mecanico_dashboard')
@@ -51,7 +66,8 @@ def requiere_tipo_usuario(tipos_permitidos):
         return wrapper
     return decorator
 
-# Vistas de dashboard
+# --- Vistas de Dashboard (Sin cambios) ---
+
 @requiere_autenticacion
 @requiere_tipo_usuario(['admin'])
 def admin_dashboard(request):
@@ -73,33 +89,45 @@ def mecanico_dashboard(request):
         'nombre_usuario': request.session.get('nombre_usuario')
     })
 
-# Finciones para Admin
+# ==========================================================
+# VISTAS "AGREGAR" REFACTORIZADAS
+# ==========================================================
+
 @requiere_autenticacion
 @requiere_tipo_usuario(['admin'])
+@transaction.atomic # Asegura que se cree el Usuario y el Chofer, o ninguno
 def admin_agregar_chofer(request):
+    # El modelo Chofer depende del modelo Usuario (es su Llave Primaria)
+    # Necesitamos dos formularios: uno para Usuario y otro para Chofer.
+    
     if request.method == 'POST':
-        but_chofer = request.POST.get('but_chofer')
-        nombre = request.POST.get('nombre')
-        fecha_nacimiento = request.POST.get('fecha_nacimiento')
-        telefono = request.POST.get('telefono')
-        estado = request.POST.get('estado')
-        horas = request.POST.get('horas')
+        # Pasamos el prefijo para que Django sepa qué datos van a qué formulario
+        usuario_form = UsuarioForm(request.POST, prefix='usuario')
+        chofer_form = ChoferForm(request.POST, prefix='chofer')
 
-        try:
-            Chofer.objects.create(
-                RUTChofer=but_chofer,
-                Nombre=nombre,
-                Fecha_Nacimiento=fecha_nacimiento,
-                Telefono=telefono,
-                Estado=estado,
-                Horas=horas
-            )
+        if usuario_form.is_valid() and chofer_form.is_valid():
+            # Creamos el objeto Usuario primero
+            nuevo_usuario = usuario_form.save(commit=False)
+            nuevo_usuario.cargo = 'chofer' # Asignamos el cargo
+            nuevo_usuario.save()
+            
+            # Creamos el objeto Chofer, asignando el usuario recién creado
+            nuevo_chofer = chofer_form.save(commit=False)
+            nuevo_chofer.usuario = nuevo_usuario # Asignamos el Usuario
+            nuevo_chofer.save()
+            
             messages.success(request, 'Chofer agregado correctamente')
             return redirect('admin_ver_chofers')
-        except:
-            messages.error(request, 'Error al agregar chofer')
+        else:
+            messages.error(request, 'Error al agregar chofer. Revisa los campos.')
+    else:
+        usuario_form = UsuarioForm(prefix='usuario')
+        chofer_form = ChoferForm(prefix='chofer')
 
-    return render(request, 'TemplatesFlota/admin_agregar_chofer.html')
+    return render(request, 'TemplatesFlota/admin_agregar_chofer.html', {
+        'usuario_form': usuario_form,
+        'chofer_form': chofer_form
+    })
 
 @requiere_autenticacion
 @requiere_tipo_usuario(['admin'])
@@ -113,44 +141,19 @@ def admin_ver_chofers(request):
 @requiere_tipo_usuario(['admin'])
 def admin_agregar_vehiculo(request):
     if request.method == 'POST':
-        patente = request.POST.get('patente')
-        vin = request.POST.get('vin')
-        marca = request.POST.get('marca')
-        modelo = request.POST.get('modelo')
-        año = request.POST.get('año')
-        motor = request.POST.get('motor')
-        seguro = request.POST.get('seguro')
-        revision_tecnica = request.POST.get('revision_tecnica')
-        permiso_circulacion = request.POST.get('permiso_circulacion')
-        gps = request.POST.get('gps')
-        kilometraje = request.POST.get('kilometraje')
-        estanque = request.POST.get('estanque')
-        tonelaje = request.POST.get('tonelaje')
-        asignacion = request.POST.get('asignacion')
-        
-        try:
-            Vehiculo.objects.create(
-                Patente=patente,
-                VIN=vin,
-                Marca=marca,
-                Modelo=modelo,
-                Año=año,
-                Motor=motor,
-                Seguro=seguro,
-                Revision_Tecnica=revision_tecnica,
-                Permiso_Circulacion=permiso_circulacion,
-                GPS=gps,
-                kilometraje=kilometraje,
-                estanque=estanque,
-                tonelaje=tonelaje,
-                asignacion=asignacion
-            )
+        form = VehiculoForm(request.POST)
+        if form.is_valid():
+            form.save() # Guarda el objeto directamente
             messages.success(request, 'Vehículo agregado correctamente')
             return redirect('admin_ver_vehiculos')
-        except:
-            messages.error(request, 'Error al agregar vehículo')
+        else:
+            messages.error(request, 'Error al agregar vehículo. Revisa los campos.')
+    else:
+        form = VehiculoForm()
     
-    return render(request, 'TemplatesFlota/admin_agregar_vehiculo.html')
+    return render(request, 'TemplatesFlota/admin_agregar_vehiculo.html', {
+        'form': form
+    })
 
 @requiere_autenticacion
 @requiere_tipo_usuario(['admin'])
@@ -176,7 +179,8 @@ def admin_ver_mantenciones(request):
         'mantenciones': mantenciones
     })
 
-# Funciones para Chofer
+# --- Funciones para Chofer ---
+
 @requiere_autenticacion
 @requiere_tipo_usuario(['chofer'])
 def chofer_ver_vehiculos(request):
@@ -188,26 +192,36 @@ def chofer_ver_vehiculos(request):
 @requiere_autenticacion
 @requiere_tipo_usuario(['chofer'])
 def chofer_agregar_combustible(request):
-    if request.method == 'POST':
-        tipo_combustible = request.POST.get('tipo_combustible')
-        fecha_recarga = request.POST.get('fecha_recarga')
-        lugar = request.POST.get('lugar')
-        encargado = request.POST.get('encargado')
-        cantidad_estanque = request.POST.get('cantidad_estanque')
-        recargar = request.POST.get('recargar')
-
-        Combustible.objects.create(
-            Tipo_Combustible=tipo_combustible,
-            Fecha_Recarga=fecha_recarga,
-            Lugar=lugar,
-            Encargado=encargado,
-            Cantidad_Estanque=cantidad_estanque,
-            Recargar=recargar
-        )
-        messages.success(request, 'Registro de combustible agregado correctamente')
-        return redirect('chofer_ver_combustible')
+    # Tu template original ponía el vehículo en modo "readonly"
+    # Usaremos el ModelForm, que mostrará un dropdown.
+    # Si quieres que se auto-asigne, la lógica debe cambiar.
     
-    return render(request, 'TemplatesFlota/chofer_agregar_combustible.html')
+    if request.method == 'POST':
+        form = CombustibleForm(request.POST)
+        if form.is_valid():
+            # Nota: El campo 'Encargado' ya no existe en el modelo,
+            # por lo que el ModelForm no intentará guardarlo.
+            form.save()
+            messages.success(request, 'Registro de combustible agregado correctamente')
+            return redirect('chofer_ver_combustible')
+        else:
+            messages.error(request, 'Error al agregar el registro.')
+    else:
+        # Intentamos pre-seleccionar el vehículo guardado en la sesión
+        vehiculo_patente = request.session.get('Vehiculo', None)
+        initial_data = {}
+        if vehiculo_patente:
+            try:
+                vehiculo_obj = Vehiculo.objects.get(patente=vehiculo_patente)
+                initial_data['vehiculo'] = vehiculo_obj
+            except Vehiculo.DoesNotExist:
+                pass # Si el vehículo no existe, simplemente no lo pre-llenamos
+        
+        form = CombustibleForm(initial=initial_data)
+    
+    return render(request, 'TemplatesFlota/chofer_agregar_combustible.html', {
+        'form': form
+    })
 
 @requiere_autenticacion
 @requiere_tipo_usuario(['chofer'])
@@ -217,7 +231,8 @@ def chofer_ver_combustible(request):
         'combustibles': combustibles
     })
 
-# Funciones para Mecánico
+# --- Funciones para Mecánico ---
+
 @requiere_autenticacion
 @requiere_tipo_usuario(['mecanico'])
 def mecanico_ver_vehiculos(request):
@@ -229,26 +244,22 @@ def mecanico_ver_vehiculos(request):
 @requiere_autenticacion
 @requiere_tipo_usuario(['mecanico'])
 def mecanico_agregar_combustible(request):
+    # Esta vista es para el mecánico, por lo que tiene sentido
+    # que pueda elegir cualquier vehículo.
     if request.method == 'POST':
-        tipo_combustible = request.POST.get('tipo_combustible')
-        fecha_recarga = request.POST.get('fecha_recarga')
-        lugar = request.POST.get('lugar')
-        encargado = request.POST.get('encargado')
-        cantidad_estanque = request.POST.get('cantidad_estanque')
-        recargar = request.POST.get('recargar')
-
-        Combustible.objects.create(
-            Tipo_Combustible=tipo_combustible,
-            Fecha_Recarga=fecha_recarga,
-            Lugar=lugar,
-            Encargado=encargado,
-            Cantidad_Estanque=cantidad_estanque,
-            Recargar=recargar
-        )
-        messages.success(request, 'Registro de combustible agregado correctamente')
-        return redirect('mecanico_ver_combustible')
+        form = CombustibleForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Registro de combustible agregado correctamente')
+            return redirect('mecanico_ver_combustible')
+        else:
+            messages.error(request, 'Error al agregar el registro.')
+    else:
+        form = CombustibleForm()
     
-    return render(request, 'TemplatesFlota/mecanico_agregar_combustible.html')
+    return render(request, 'TemplatesFlota/mecanico_agregar_combustible.html', {
+        'form': form
+    })
 
 @requiere_autenticacion
 @requiere_tipo_usuario(['mecanico'])
@@ -261,27 +272,33 @@ def mecanico_ver_combustible(request):
 @requiere_autenticacion
 @requiere_tipo_usuario(['mecanico'])
 def mecanico_agregar_mantencion(request):
-    if request.method == 'POST':
-        tipo_mantencion = request.POST.get('tipo_mantencion')
-        fecha = request.POST.get('fecha')
-        lugar = request.POST.get('lugar')
-        descripcion = request.POST.get('descripcion')
-
-        # último ID + 1
-        ultima_mantencion = Mantencion.objects.order_by('-ID_Mantencion').first()
-        nuevo_id = ultima_mantencion.ID_Mantencion + 1 if ultima_mantencion else 1
-
-        Mantencion.objects.create(
-            ID_Mantencion=nuevo_id,
-            Tipo_Mantencion=tipo_mantencion,
-            Lugar=lugar,
-            Fecha=fecha,
-            Descripcion=descripcion
-        )
-        messages.success(request, 'Mantención agregada correctamente')
-        return redirect('mecanico_ver_mantenciones')
+    # Tu vista original no asignaba 'vehiculo' ni 'mecanico',
+    # lo cual causaría un error. El ModelForm requiere estos campos.
     
-    return render(request, 'TemplatesFlota/mecanico_agregar_mantencion.html')
+    if request.method == 'POST':
+        form = MantencionForm(request.POST)
+        if form.is_valid():
+            # Ya no es necesario calcular el ID, el AutoField lo hace solo.
+            form.save()
+            messages.success(request, 'Mantención agregada correctamente')
+            return redirect('mecanico_ver_mantenciones')
+        else:
+            messages.error(request, 'Error al agregar la mantención.')
+    else:
+        # Intentamos pre-seleccionar al mecánico que está logueado
+        initial_data = {}
+        try:
+            usuario_obj = Usuario.objects.get(username=request.session['username'])
+            mecanico_obj = Mecanico.objects.get(usuario=usuario_obj)
+            initial_data['mecanico'] = mecanico_obj
+        except (Usuario.DoesNotExist, Mecanico.DoesNotExist):
+            pass # Si no se encuentra, el usuario deberá seleccionarlo manualmente
+            
+        form = MantencionForm(initial=initial_data)
+    
+    return render(request, 'TemplatesFlota/mecanico_agregar_mantencion.html', {
+        'form': form
+    })
 
 @requiere_autenticacion
 @requiere_tipo_usuario(['mecanico'])
@@ -291,30 +308,32 @@ def mecanico_ver_mantenciones(request):
         'mantenciones': mantenciones
     })
 
-# Clases de los models.
+# --- Clases de los models (Sin cambios) ---
 
 def ChoferData(request):
-    Chofer = Chofer.objects.all()
-    data = {'Chofer' : Chofer}
+    Choferes = Chofer.objects.all() # Corregido: el modelo es Chofer
+    data = {'Choferes' : Choferes} # Corregido: la variable en el template es Choferes
     return render(request, 'chofer.html', data)
 
 def MantencionData(request):
-    Mantencion = Mantencion.objects.all()
-    data = {'Mantencion' : Mantencion}
+    Mantenciones = Mantencion.objects.all() # Corregido: variable plural
+    data = {'Mantencion' : Mantenciones} # La variable en el template puede ser otra
     return render(request, 'mantencion.html', data)
 
 def CombustibleData(request):
-    Combustible = Combustible.objects.all()
-    data = {'Combustible' : Combustible}
+    Combustibles = Combustible.objects.all() # Corregido: variable plural
+    data = {'Combustible' : Combustibles}
     return render(request, 'combustible.html', data)
 
 def MecanicoData(request):
-    Mecanico = Mecanico.objects.all()
-    data = {'Mecanico' : Mecanico}
+    Mecanicos = Mecanico.objects.all() # Corregido: variable plural
+    data = {'Mecanico' : Mecanicos}
     return render(request, 'mecanico.html', data)
 
+# Error en tu código original: 'Tipo_Vehiculo' no está definido. 
+# El modelo es 'TipoVehiculo'
+from .models import TipoVehiculo 
 def Tipo_VehiculoData(request):
-    Tipo_Vehiculo = Tipo_Vehiculo.objects.all()
-    data = {'Tipo_Vehiculo' : Tipo_Vehiculo}
+    Tipo_Vehiculos = TipoVehiculo.objects.all() # Corregido: Modelo y variable
+    data = {'Tipo_Vehiculo' : Tipo_Vehiculos}
     return render(request, 'tipoVehiculo.html', data)
-

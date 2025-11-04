@@ -1,55 +1,24 @@
 {% extends 'TemplatesFlota/base.html' %}
+{% load material_form %}
 
 {% block title %}Agregar Combustible{% endblock %}
 
-{% block menu %}
-    <a href="{% url 'chofer_dashboard' %}">Volver al Panel</a>
-    <a href="{% url 'chofer_ver_combustible' %}">Ver Combustible</a>
-{% endblock %}
-
 {% block content %}
 <h2>Agregar Registro de Combustible</h2>
-<form method="post">
-    {% csrf_token %}
-    <div class="form-group">
-        <label for="tipo_combustible">Tipo de Combustible:</label>
-        <select id="tipo_combustible" name="tipo_combustible" required>
-            <option value="93">93 Octanos</option>
-            <option value="95">95 Octanos</option>
-            <option value="97">97 Octanos</option>
-            <option value="Diesel">Diesel</option>
-            <option value="Gas">Gas</option>
-        </select>
+
+<div class="row">
+    <div class="col s12 m8 l6">
+        <div class="card-panel">
+            <form method="post">
+                {% csrf_token %}
+                
+                {% form form=form %}{% endform %}
+                
+                <button type="submit" class="btn waves-effect waves-light">
+                    Agregar Registro <i class="material-icons right">send</i>
+                </button>
+            </form>
+        </div>
     </div>
-    
-    <div class="form-group">
-        <label for="fecha_recarga">Fecha de Recarga:</label>
-        <input type="date" id="fecha_recarga" name="fecha_recarga" required>
-    </div>
-    
-    <div class="form-group">
-        <label for="lugar">Lugar:</label>
-        <input type="text" id="lugar" name="lugar" required>
-    </div>
-    
-    <div class="form-group">
-        <label for="vehiculo">Vehiculo:</label>
-        <input type="text" id="vehiculo" name="vehiculo" value="{{ request.session.Vehiculo }}" readonly>
-    </div>
-    
-    <div class="form-group">
-        <label for="cantidad_estanque">Cantidad de Estanque (litros):</label>
-        <input type="number" id="cantidad_estanque" name="cantidad_estanque" step="0.1" required>
-    </div>
-    
-    <div class="form-group">
-        <label for="recargar">Recargar:</label>
-        <select id="recargar" name="recargar" required>
-            <option value="Sí">Sí</option>
-            <option value="No">No</option>
-        </select>
-    </div>
-    
-    <input type="submit" value="Agregar Registro">
-</form>
+</div>
 {% endblock %}
