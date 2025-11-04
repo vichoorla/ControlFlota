@@ -18,26 +18,22 @@
             <th>Encargado</th>
             <th>Cantidad Estanque</th>
             <th>Recargar</th>
-            <th>Vehículo ID</th>
-            <th>Registrado por</th>
         </tr>
     </thead>
     <tbody>
-        {% for id, combustible in combustibles.items %}
+        {% for combustible in combustibles %}
         <tr>
             <td>{{ combustible.id }}</td>
-            <td>{{ combustible.tipo_combustible }}</td>
-            <td>{{ combustible.fecha_recarga }}</td>
-            <td>{{ combustible.lugar }}</td>
-            <td>{{ combustible.encargado }}</td>
-            <td>{{ combustible.cantidad_estanque }}</td>
-            <td>{{ combustible.recargar }}</td>
-            <td>{{ combustible.vehiculo_id }}</td>
-            <td>{{ combustible.registrado_por }}</td>
+            <td>{{ combustible.Tipo_Combustible }}</td>
+            <td>{{ combustible.Fecha_Recarga }}</td>
+            <td>{{ combustible.Lugar }}</td>
+            <td>{{ combustible.Encargado }}</td>
+            <td>{{ combustible.Cantidad_Estanque }}</td>
+            <td>{{ combustible.Recargar }}</td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="9">No hay registros de combustible.</td>
+            <td colspan="7">No hay registros de combustible.</td>
         </tr>
         {% endfor %}
     </tbody>

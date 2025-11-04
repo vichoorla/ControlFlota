@@ -13,7 +13,13 @@
     {% csrf_token %}
     <div class="form-group">
         <label for="tipo_combustible">Tipo de Combustible:</label>
-        <input type="text" id="tipo_combustible" name="tipo_combustible" required>
+        <select id="tipo_combustible" name="tipo_combustible" required>
+            <option value="93">93 Octanos</option>
+            <option value="95">95 Octanos</option>
+            <option value="97">97 Octanos</option>
+            <option value="Diesel">Diesel</option>
+            <option value="Gas">Gas</option>
+        </select>
     </div>
     
     <div class="form-group">
@@ -28,26 +34,19 @@
     
     <div class="form-group">
         <label for="encargado">Encargado:</label>
-        <input type="text" id="encargado" name="encargado" required>
+        <input type="text" id="encargado" name="encargado" value="{{ request.session.nombre_usuario }}" readonly>
     </div>
     
     <div class="form-group">
-        <label for="cantidad_estanque">Cantidad de Estanque:</label>
-        <input type="text" id="cantidad_estanque" name="cantidad_estanque" required>
+        <label for="cantidad_estanque">Cantidad de Estanque (litros):</label>
+        <input type="number" id="cantidad_estanque" name="cantidad_estanque" step="0.1" required>
     </div>
     
     <div class="form-group">
-        <label for="recargar">Recargar (Sí/No):</label>
-        <input type="text" id="recargar" name="recargar" required>
-    </div>
-    
-    <div class="form-group">
-        <label for="vehiculo_id">Vehículo:</label>
-        <select id="vehiculo_id" name="vehiculo_id" required>
-            <option value="">Seleccione un vehículo</option>
-            {% for id, vehiculo in vehiculos.items %}
-            <option value="{{ vehiculo.id }}">{{ vehiculo.patente }} - {{ vehiculo.marca }} {{ vehiculo.modelo }}</option>
-            {% endfor %}
+        <label for="recargar">Recargar:</label>
+        <select id="recargar" name="recargar" required>
+            <option value="Sí">Sí</option>
+            <option value="No">No</option>
         </select>
     </div>
     

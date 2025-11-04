@@ -12,8 +12,8 @@
 <table>
     <thead>
         <tr>
-            <th>ID</th>
             <th>Patente</th>
+            <th>VIN</th>
             <th>Marca</th>
             <th>Modelo</th>
             <th>Año</th>
@@ -25,18 +25,18 @@
         </tr>
     </thead>
     <tbody>
-        {% for id, vehiculo in vehiculos.items %}
+        {% for vehiculo in vehiculos %}
         <tr>
-            <td>{{ vehiculo.id }}</td>
-            <td>{{ vehiculo.patente }}</td>
-            <td>{{ vehiculo.marca }}</td>
-            <td>{{ vehiculo.modelo }}</td>
-            <td>{{ vehiculo.año }}</td>
-            <td>{{ vehiculo.motor }}</td>
-            <td>{{ vehiculo.seguro }}</td>
-            <td>{{ vehiculo.revision_tecnica }}</td>
-            <td>{{ vehiculo.permiso_circulacion }}</td>
-            <td>{{ vehiculo.gps }}</td>
+            <td>{{ vehiculo.Patente }}</td>
+            <td>{{ vehiculo.VIN }}</td>
+            <td>{{ vehiculo.Marca }}</td>
+            <td>{{ vehiculo.Modelo }}</td>
+            <td>{{ vehiculo.Año }}</td>
+            <td>{{ vehiculo.Motor }}</td>
+            <td>{{ vehiculo.Seguro }}</td>
+            <td>{{ vehiculo.Revision_Tecnica }}</td>
+            <td>{{ vehiculo.Permiso_Circulacion }}</td>
+            <td>{{ vehiculo.GPS }}</td>
         </tr>
         {% empty %}
         <tr>

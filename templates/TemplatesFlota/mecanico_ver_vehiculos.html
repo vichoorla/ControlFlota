@@ -11,7 +11,6 @@
 <table>
     <thead>
         <tr>
-            <th>ID</th>
             <th>Patente</th>
             <th>Marca</th>
             <th>Modelo</th>
@@ -21,12 +20,15 @@
             <th>Revisión Técnica</th>
             <th>Permiso Circulación</th>
             <th>GPS</th>
+            <th>Kilometraje</th>
+            <th>Estanque</th>
+            <th>Tonelaje</th>
+            <th>Asignacion</th>
         </tr>
     </thead>
     <tbody>
-        {% for id, vehiculo in vehiculos.items %}
+        {% for vehiculo in vehiculos %}
         <tr>
-            <td>{{ vehiculo.id }}</td>
             <td>{{ vehiculo.patente }}</td>
             <td>{{ vehiculo.marca }}</td>
             <td>{{ vehiculo.modelo }}</td>
@@ -36,10 +38,14 @@
             <td>{{ vehiculo.revision_tecnica }}</td>
             <td>{{ vehiculo.permiso_circulacion }}</td>
             <td>{{ vehiculo.gps }}</td>
+            <td>{{ vehiculo.kilometraje }}</td>
+            <td>{{ vehiculo.estanque }}</td>
+            <td>{{ vehiculo.tonelaje }}</td>
+            <td>{{ vehiculo.asignacion }}</td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="10">No hay vehículos registrados.</td>
+            <td colspan="9">No hay vehículos registrados.</td>
         </tr>
         {% endfor %}
     </tbody>

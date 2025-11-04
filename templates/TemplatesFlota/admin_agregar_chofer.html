@@ -11,6 +11,11 @@
 <form method="post">
     {% csrf_token %}
     <div class="form-group">
+        <label for="but_chofer">BUT Chofer:</label>
+        <input type="number" id="but_chofer" name="but_chofer" required>
+    </div>
+    
+    <div class="form-group">
         <label for="nombre">Nombre:</label>
         <input type="text" id="nombre" name="nombre" required>
     </div>
@@ -27,7 +32,11 @@
     
     <div class="form-group">
         <label for="estado">Estado:</label>
-        <input type="text" id="estado" name="estado" required>
+        <select id="estado" name="estado" required>
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+            <option value="Vacaciones">Vacaciones</option>
+        </select>
     </div>
     
     <div class="form-group">
