@@ -4,7 +4,6 @@
 {% block title %}Panel de Chofer{% endblock %}
 
 {% block menu %}
-    <a href="{% url 'chofer_ver_vehiculos' %}">Ver Vehículos</a>
     <a href="{% url 'chofer_agregar_combustible' %}">Agregar Combustible</a>
     <a href="{% url 'chofer_ver_combustible' %}">Ver Combustible</a>
 {% endblock %}
@@ -18,4 +17,21 @@
         <p>Rol: Chofer</p>
     </div>
 </div>
+
+<hr> 
+
+<h3>Mi Vehículo Asignado</h3>
+
+{% if vehiculos %}
+    {% for vehiculo in vehiculos %}
+        <div class="vehiculo-info" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+            <h4>Patente: {{ vehiculo.patente }}</h4>
+            <p><strong>Modelo:</strong> {{ vehiculo.marca }} {{ vehiculo.modelo }}</p>
+            <p><strong>Año:</strong> {{ vehiculo.año }}</p>
+            <p><strong>Kilometraje:</strong> {{ vehiculo.kilometraje }} km</p>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No tienes ningún vehículo asignado actualmente.</p>
+{% endif %}
 {% endblock %}

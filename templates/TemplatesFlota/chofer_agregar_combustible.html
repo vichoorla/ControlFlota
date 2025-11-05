@@ -9,6 +9,7 @@
 
 {% block content %}
 <h2>Agregar Registro de Combustible</h2>
+
 <form method="post">
     {% csrf_token %}
     <div class="form-group">
@@ -17,8 +18,8 @@
             <option value="93">93 Octanos</option>
             <option value="95">95 Octanos</option>
             <option value="97">97 Octanos</option>
-            <option value="Diesel">Diesel</option>
-            <option value="Gas">Gas</option>
+            <option value="Diésel">Diésel</option> 
+            <option value="GLP">Gas (GLP)</option> 
         </select>
     </div>
     
@@ -34,9 +35,19 @@
     
     <div class="form-group">
         <label for="vehiculo">Vehiculo:</label>
-        <input type="text" id="vehiculo" name="vehiculo" value="{{ request.session.Vehiculo }}" readonly>
+        
+        {% if vehiculos_asignados %}
+            <select id="vehiculo" name="vehiculo" required>
+                {% for vehiculo in vehiculos_asignados %}
+                    <option value="{{ vehiculo.patente }}">
+                        {{ vehiculo.patente }} - ({{ vehiculo.marca }} {{ vehiculo.modelo }})
+                    </option>
+                {% endfor %}
+            </select>
+        {% else %}
+            <p style="color: red;">No tienes vehículos asignados. No puedes agregar combustible.</p>
+        {% endif %}
     </div>
-    
     <div class="form-group">
         <label for="cantidad_estanque">Cantidad de Estanque (litros):</label>
         <input type="number" id="cantidad_estanque" name="cantidad_estanque" step="0.1" required>
@@ -45,11 +56,13 @@
     <div class="form-group">
         <label for="recargar">Recargar:</label>
         <select id="recargar" name="recargar" required>
-            <option value="Sí">Sí</option>
+            <option value="Si">Sí</option> 
             <option value="No">No</option>
         </select>
     </div>
     
-    <input type="submit" value="Agregar Registro">
+    {% if vehiculos_asignados %}
+        <input type="submit" value="Agregar Registro">
+    {% endif %}
 </form>
 {% endblock %}

@@ -8,35 +8,43 @@
 {% endblock %}
 
 {% block content %}
-<h2>Registros de Combustible</h2>
-<table>
+<h2>Mis Registros de Combustible</h2>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<table class="styled-table">
     <thead>
         <tr>
-            <th>ID</th>
-            <th>Tipo Combustible</th>
-            <th>Fecha Recarga</th>
+            <th>Vehículo (Patente)</th> 
+            <th>Fecha de Recarga</th>
             <th>Lugar</th>
-            <th>Encargado</th>
-            <th>Cantidad Estanque</th>
-            <th>Recargar</th>
+            <th>Tipo de Combustible</th>
+            <th>Litros Cargados</th>
+            <th>¿Recarga Completa?</th>
         </tr>
     </thead>
     <tbody>
         {% for combustible in combustibles %}
-        <tr>
-            <td>{{ combustible.id }}</td>
-            <td>{{ combustible.Tipo_Combustible }}</td>
-            <td>{{ combustible.Fecha_Recarga }}</td>
-            <td>{{ combustible.Lugar }}</td>
-            <td>{{ combustible.Encargado }}</td>
-            <td>{{ combustible.Cantidad_Estanque }}</td>
-            <td>{{ combustible.Recargar }}</td>
-        </tr>
+            <tr>
+                <td>{{ combustible.vehiculo.patente }}</td>
+                <td>{{ combustible.Fecha_Recarga }}</td>
+                <td>{{ combustible.Lugar }}</td>
+                <td>{{ combustible.Tipo_Combustible }}</td>
+                <td>{{ combustible.Cantidad_Estanque }}</td>
+                <td>{{ combustible.Recargar }}</td>
+            </tr>
         {% empty %}
-        <tr>
-            <td colspan="7">No hay registros de combustible.</td>
-        </tr>
+            <tr>
+                <td colspan="6">No tienes registros de combustible para tus vehículos.</td>
+            </tr>
         {% endfor %}
     </tbody>
 </table>
+
 {% endblock %}

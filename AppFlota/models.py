@@ -131,7 +131,7 @@ class Vehiculo(models.Model):
    )
 
    def __str__(self):
-        return self.nombre
+        return self.patente
 
    def clean(self):
        super().clean()

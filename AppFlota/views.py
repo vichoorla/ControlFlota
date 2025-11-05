@@ -62,9 +62,30 @@ def admin_dashboard(request):
 @requiere_autenticacion
 @requiere_tipo_usuario(['chofer'])
 def chofer_dashboard(request):
-    return render(request, 'TemplatesFlota/chofer_dashboard.html', {
-        'nombre_usuario': request.session.get('nombre_usuario')
-    })
+    nombre_usuario = request.session.get('nombre_usuario')
+    username = request.session.get('username')
+    
+    vehiculos_del_chofer = []
+    
+    try:
+        # se busca al usuario
+        usuario_actual = Usuario.objects.get(username=username)
+        
+        # se busca al chofer asignado
+        chofer_actual = usuario_actual.chofer 
+        
+        # se busca el vehiculo asignado
+        vehiculos_del_chofer = chofer_actual.vehiculos_asignados.all()
+        
+    except (Usuario.DoesNotExist, Chofer.DoesNotExist, AttributeError):
+        pass 
+
+    context = {
+        'nombre_usuario': nombre_usuario,
+        'vehiculos': vehiculos_del_chofer 
+    }
+    return render(request, 'TemplatesFlota/chofer_dashboard.html', context)
+
 
 @requiere_autenticacion
 @requiere_tipo_usuario(['mecanico'])
@@ -188,34 +209,85 @@ def chofer_ver_vehiculos(request):
 @requiere_autenticacion
 @requiere_tipo_usuario(['chofer'])
 def chofer_agregar_combustible(request):
+    
+    # Obtener los vehículos del chofer
+    vehiculos_del_chofer = []
+    try:
+        username = request.session.get('username')
+        usuario_actual = Usuario.objects.get(username=username)
+        chofer_actual = usuario_actual.chofer
+        vehiculos_del_chofer = chofer_actual.vehiculos_asignados.all()
+    except (Usuario.DoesNotExist, Chofer.DoesNotExist, AttributeError):
+        messages.error(request, 'No se pudo encontrar su perfil de chofer.')
+        return redirect('chofer_dashboard')
+
+    # Lógica de cuando se envía el formulario
     if request.method == 'POST':
         tipo_combustible = request.POST.get('tipo_combustible')
         fecha_recarga = request.POST.get('fecha_recarga')
         lugar = request.POST.get('lugar')
-        encargado = request.POST.get('encargado')
+        
+        # Se obtiene la patente
+        patente_vehiculo = request.POST.get('vehiculo') 
+        
         cantidad_estanque = request.POST.get('cantidad_estanque')
         recargar = request.POST.get('recargar')
 
-        Combustible.objects.create(
-            Tipo_Combustible=tipo_combustible,
-            Fecha_Recarga=fecha_recarga,
-            Lugar=lugar,
-            Encargado=encargado,
-            Cantidad_Estanque=cantidad_estanque,
-            Recargar=recargar
-        )
-        messages.success(request, 'Registro de combustible agregado correctamente')
-        return redirect('chofer_ver_combustible')
-    
-    return render(request, 'TemplatesFlota/chofer_agregar_combustible.html')
+        if not patente_vehiculo:
+            messages.error(request, 'Debe seleccionar un vehículo.')
+        else:
+            try:
+                vehiculo_obj = Vehiculo.objects.get(patente=patente_vehiculo)
+                
+                # se asegura que el auto sea del chofer
+                if vehiculo_obj in vehiculos_del_chofer:
+                    Combustible.objects.create(
+                        vehiculo=vehiculo_obj, 
+                        Tipo_Combustible=tipo_combustible,
+                        Fecha_Recarga=fecha_recarga,
+                        Lugar=lugar,
+                        Cantidad_Estanque=cantidad_estanque,
+                        Recargar=recargar
+                    )
+                    messages.success(request, 'Registro de combustible agregado correctamente')
+                    return redirect('chofer_ver_combustible')
+                else:
+                    messages.error(request, 'El vehículo seleccionado no está asignado a usted.')
+                    
+            except Vehiculo.DoesNotExist:
+                messages.error(request, 'El vehículo seleccionado no existe.')
+            except Exception as e:
+                messages.error(request, f'Ocurrió un error inesperado: {e}')
+
+    context = {
+        'vehiculos_asignados': vehiculos_del_chofer
+    }
+    return render(request, 'TemplatesFlota/chofer_agregar_combustible.html', context)
 
 @requiere_autenticacion
 @requiere_tipo_usuario(['chofer'])
 def chofer_ver_combustible(request):
-    combustibles = Combustible.objects.all()
-    return render(request, 'TemplatesFlota/chofer_ver_combustible.html', {
-        'combustibles': combustibles
-    })
+    
+    lista_combustibles = []
+    
+    try:
+        username = request.session.get('username')
+        usuario_actual = Usuario.objects.get(username=username)
+        chofer_actual = usuario_actual.chofer
+        
+        vehiculos_del_chofer = chofer_actual.vehiculos_asignados.all()
+        
+        lista_combustibles = Combustible.objects.filter(
+            vehiculo__in=vehiculos_del_chofer
+        ).order_by('-Fecha_Recarga') # se ordena por la fecha mas nueva
+        
+    except (Usuario.DoesNotExist, Chofer.DoesNotExist):
+        messages.error(request, 'No se pudo encontrar tu perfil de chofer.')
+    
+    context = {
+        'combustibles': lista_combustibles
+    }
+    return render(request, 'TemplatesFlota/chofer_ver_combustible.html', context)
 
 # Funciones para Mecánico
 @requiere_autenticacion
@@ -233,7 +305,6 @@ def mecanico_agregar_combustible(request):
         tipo_combustible = request.POST.get('tipo_combustible')
         fecha_recarga = request.POST.get('fecha_recarga')
         lugar = request.POST.get('lugar')
-        encargado = request.POST.get('encargado')
         cantidad_estanque = request.POST.get('cantidad_estanque')
         recargar = request.POST.get('recargar')
 
@@ -241,7 +312,6 @@ def mecanico_agregar_combustible(request):
             Tipo_Combustible=tipo_combustible,
             Fecha_Recarga=fecha_recarga,
             Lugar=lugar,
-            Encargado=encargado,
             Cantidad_Estanque=cantidad_estanque,
             Recargar=recargar
         )
