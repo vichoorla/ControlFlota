@@ -1,0 +1,22 @@
+{% extends 'TemplatesFlota/base.html' %}
+
+{% block title %}Agregar Tipo de Vehículo{% endblock %}
+
+{% block menu %}
+    <a href="{% url 'admin_dashboard' %}">Volver al Panel</a>
+    <a href="{% url 'admin_ver_tipos_vehiculo' %}">Ver Todos</a>
+{% endblock %}
+
+{% block content %}
+<h2>Agregar Tipo de Vehículo</h2>
+<p>Crea un nuevo tipo de vehículo (ej: "Camión", "Furgoneta", "Auto").</p>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="nombre">Nombre del Tipo:</label>
+        <input type="text" id="nombre" name="nombre" required>
+    </div>
+    <input type="submit" value="Agregar Tipo">
+</form>
+{% endblock %}

@@ -19,6 +19,19 @@ from django.urls import path
 from AppFlota import views
 
 urlpatterns = [
+
+        # Funciones de Admin
+    path('admin/agregar-chofer/', views.admin_agregar_chofer, name='admin_agregar_chofer'),
+    path('admin/ver-chofers/', views.admin_ver_chofers, name='admin_ver_chofers'),
+    path('admin/agregar-vehiculo/', views.admin_agregar_vehiculo, name='admin_agregar_vehiculo'),
+    path('admin/ver-vehiculos/', views.admin_ver_vehiculos, name='admin_ver_vehiculos'),
+    path('admin/ver-combustible/', views.admin_ver_combustible, name='admin_ver_combustible'),
+    path('admin/ver-mantenciones/', views.admin_ver_mantenciones, name='admin_ver_mantenciones'),
+    path('admin/agregar-mecanico/', views.admin_agregar_mecanico, name='admin_agregar_mecanico'),
+    path('admin/ver-mecanicos/', views.admin_ver_mecanicos, name='admin_ver_mecanicos'),
+    path('admin/agregar-tipo-vehiculo/', views.admin_agregar_tipo_vehiculo, name='admin_agregar_tipo_vehiculo'),
+    path('admin/ver-tipos-vehiculo/', views.admin_ver_tipos_vehiculo, name='admin_ver_tipos_vehiculo'),
+
     path('admin/', admin.site.urls),
     path('', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
@@ -27,14 +40,6 @@ urlpatterns = [
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('chofer-dashboard/', views.chofer_dashboard, name='chofer_dashboard'),
     path('mecanico-dashboard/', views.mecanico_dashboard, name='mecanico_dashboard'),
-    
-    # Funciones de Admin
-    path('admin/agregar-chofer/', views.admin_agregar_chofer, name='admin_agregar_chofer'),
-    path('admin/ver-chofers/', views.admin_ver_chofers, name='admin_ver_chofers'),
-    path('admin/agregar-vehiculo/', views.admin_agregar_vehiculo, name='admin_agregar_vehiculo'),
-    path('admin/ver-vehiculos/', views.admin_ver_vehiculos, name='admin_ver_vehiculos'),
-    path('admin/ver-combustible/', views.admin_ver_combustible, name='admin_ver_combustible'),
-    path('admin/ver-mantenciones/', views.admin_ver_mantenciones, name='admin_ver_mantenciones'),
     
     # Funciones de Chofer
     path('chofer/ver-vehiculos/', views.chofer_ver_vehiculos, name='chofer_ver_vehiculos'),

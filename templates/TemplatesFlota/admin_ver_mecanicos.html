@@ -1,0 +1,50 @@
+{% extends 'TemplatesFlota/base.html' %}
+{% load static %}
+
+{% block title %}Ver Mecánicos{% endblock %}
+
+{% block menu %}
+    <a href="{% url 'admin_dashboard' %}">Volver al Panel</a>
+    <a href="{% url 'admin_agregar_mecanico' %}">Agregar Mecánico</a>
+{% endblock %}
+
+{% block content %}
+<h2>Lista de Mecánicos</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Imagen</th>
+            <th>RUT</th>
+            <th>Nombre</th>
+            <th>Usuario</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Teléfono</th>
+            <th>Estado</th>
+            <th>Taller</th>
+            <th>Horas</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for mecanico in mecanicos %}
+        <tr>
+            <td>
+                <img src="{% static 'images/fotoperfil.jpg' %}" alt="Foto de perfil" class="profile-img">
+            </td>
+            <td>{{ mecanico.RUT_Mecanico }}</td>
+            <td>{{ mecanico.Nombre }}</td>
+            <td>{{ mecanico.usuario.username }}</td>
+            <td>{{ mecanico.usuario.email }}</td>
+            <td>{{ mecanico.Telefono }}</td>
+            <td>{{ mecanico.Estado }}</td>
+            <td>{{ mecanico.Taller }}</td>
+            <td>{{ mecanico.Horas }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="9">No hay mecánicos registrados.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

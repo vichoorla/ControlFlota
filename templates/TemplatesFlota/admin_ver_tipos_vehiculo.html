@@ -1,0 +1,32 @@
+{% extends 'TemplatesFlota/base.html' %}
+
+{% block title %}Ver Tipos de Vehículo{% endblock %}
+
+{% block menu %}
+    <a href="{% url 'admin_dashboard' %}">Volver al Panel</a>
+    <a href="{% url 'admin_agregar_tipo_vehiculo' %}">Agregar Nuevo Tipo</a>
+{% endblock %}
+
+{% block content %}
+<h2>Lista de Tipos de Vehículo</h2>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tipo in tipos_vehiculo %}
+        <tr>
+            <td>{{ tipo.ID_Tipo }}</td>
+            <td>{{ tipo.nombre }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="2">No hay tipos de vehículo registrados.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

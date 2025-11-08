@@ -1,6 +1,6 @@
 {% extends 'TemplatesFlota/base.html' %}
 
-{% block title %}Ver Mantenciones{% endblock %}
+{% block title %}Mis Mantenciones{% endblock %}
 
 {% block menu %}
     <a href="{% url 'mecanico_dashboard' %}">Volver al Panel</a>
@@ -8,12 +8,12 @@
 {% endblock %}
 
 {% block content %}
-<h2>Registros de Mantenciones</h2>
+<h2>Mis Registros de Mantención</h2>
 <table>
     <thead>
         <tr>
             <th>ID</th>
-            <th>Tipo Mantención</th>
+            <th>Vehículo</th> <th>Tipo Mantención</th>
             <th>Fecha</th>
             <th>Lugar</th>
             <th>Descripción</th>
@@ -23,14 +23,14 @@
         {% for mantencion in mantenciones %}
         <tr>
             <td>{{ mantencion.ID_Mantencion }}</td>
-            <td>{{ mantencion.Tipo_Mantencion }}</td>
+            <td>{{ mantencion.vehiculo.patente }}</td> <td>{{ mantencion.Tipo_Mantencion }}</td>
             <td>{{ mantencion.Fecha }}</td>
             <td>{{ mantencion.Lugar }}</td>
             <td>{{ mantencion.Descripcion }}</td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="4">No hay registros de mantenciones.</td>
+            <td colspan="6">No has registrado ninguna mantención.</td>
         </tr>
         {% endfor %}
     </tbody>

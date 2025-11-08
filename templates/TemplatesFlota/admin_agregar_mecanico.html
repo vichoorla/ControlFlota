@@ -1,39 +1,40 @@
 {% extends 'TemplatesFlota/base.html' %}
 
-{% block title %}Agregar Chofer{% endblock %}
+{% block title %}Agregar Mecánico{% endblock %}
 
 {% block menu %}
     <a href="{% url 'admin_dashboard' %}">Volver al Panel</a>
 {% endblock %}
 
 {% block content %}
-<h2>Agregar Chofer</h2>
+<h2>Agregar Mecánico</h2>
 <form method="post">
     {% csrf_token %}
-    
-    <h3>Datos de la Cuenta de Usuario</h3>
+
+    <h3>Datos de Usuario (Para Iniciar Sesión)</h3>
     <div class="form-group">
-        <label for="username">Nombre de Usuario:</label>
+        <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>
     </div>
     <div class="form-group">
-        <label for="password">Contraseña:</label>
+        <label for="password">Password:</label>
         <input type="password" id="password" name="password" required>
     </div>
-
     <div class="form-group">
         <label for="email_usuario">Email (Usuario):</label>
         <input type="email" id="email_usuario" name="email_usuario" required>
     </div>
 
-    <h3>Datos Personales del Chofer</h3>
+    <hr>
+
+    <h3>Datos del Perfil Mecánico</h3>
     <div class="form-group">
-        <label for="RUTChofer">RUT Chofer:</label>
-        <input type="text" id="RUTChofer" name="RUTChofer" placeholder="12345678-9" required>
+        <label for="RUT_Mecanico">RUT Mecánico:</label>
+        <input type="text" id="RUT_Mecanico" name="RUT_Mecanico" required>
     </div>
     
     <div class="form-group">
-        <label for="nombre">Nombre Completo:</label>
+        <label for="nombre">Nombre:</label>
         <input type="text" id="nombre" name="nombre" required>
     </div>
     
@@ -44,7 +45,7 @@
     
     <div class="form-group">
         <label for="telefono">Teléfono:</label>
-        <input type="text" id="telefono" name="telefono" placeholder="+56912345678" required>
+        <input type="text" id="telefono" name="telefono" required>
     </div>
     
     <div class="form-group">
@@ -54,15 +55,19 @@
             <option value="Inactivo">Inactivo</option>
             <option value="Vacaciones">Vacaciones</option>
             <option value="Licencia">Licencia</option>
-            <option value="Suspendido">Suspendido</option>
         </select>
+    </div>
+
+    <div class="form-group">
+        <label for="taller">Taller:</label>
+        <input type="text" id="taller" name="taller" required>
     </div>
     
     <div class="form-group">
         <label for="horas">Horas:</label>
-        <input type="number" id="horas" name="horas" value="0" required>
+        <input type="number" id="horas" name="horas" required>
     </div>
     
-    <input type="submit" value="Agregar Chofer">
+    <input type="submit" value="Agregar Mecánico">
 </form>
 {% endblock %}

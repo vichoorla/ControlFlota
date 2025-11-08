@@ -1,6 +1,6 @@
 {% extends 'TemplatesFlota/base.html' %}
 
-{% block title %}Ver Combustible{% endblock %}
+{% block title %}Ver Combustible (Mecánico){% endblock %}
 
 {% block menu %}
     <a href="{% url 'mecanico_dashboard' %}">Volver al Panel</a>
@@ -13,10 +13,10 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>Tipo Combustible</th>
+            <th>Vehículo</th> <th>Tipo Combustible</th>
             <th>Fecha Recarga</th>
             <th>Lugar</th>
-            <th>Cantidad Estanque</th>
+            <th>Cantidad (Lts)</th>
             <th>Recargar</th>
         </tr>
     </thead>
@@ -24,7 +24,7 @@
         {% for combustible in combustibles %}
         <tr>
             <td>{{ combustible.id }}</td>
-            <td>{{ combustible.Tipo_Combustible }}</td>
+            <td>{{ combustible.vehiculo.patente }}</td> <td>{{ combustible.Tipo_Combustible }}</td>
             <td>{{ combustible.Fecha_Recarga }}</td>
             <td>{{ combustible.Lugar }}</td>
             <td>{{ combustible.Cantidad_Estanque }}</td>

@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
-from datetime import date, datetime
+from datetime import date
 from django.core.validators import BaseValidator
 import re
 
@@ -226,6 +226,7 @@ class Mantencion(models.Model):
         ])
     
     Fecha = models.DateField()
+
     Lugar = models.CharField(max_length=50)
 
     Descripcion = models.CharField(        
@@ -279,8 +280,6 @@ class Mecanico(models.Model):
                 message='Teléfono debe tener 9 dígitos comenzando con 9 o formato +56 9 XXXX XXXX'
             )
         ])
-    
-    Email = models.CharField(max_length=45)
 
     Estado = models.CharField(        
         max_length=45,
@@ -355,10 +354,7 @@ class Mecanico(models.Model):
                 self.RUT_Mecanico = f"{cuerpo}-{dv}"
         
         self.full_clean()
-        super().save(*args, **kwargs)
         
-        # Validar antes de guardar
-        self.full_clean()
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -471,8 +467,6 @@ class Chofer(models.Model):
                 message='Horas debe ser un número entre 0 y 999'
             )
         ])
-    
-    Email = models.EmailField(max_length=45)
 
     def clean(self):
         super().clean()
@@ -527,11 +521,8 @@ class Chofer(models.Model):
                 self.RUTChofer = f"{cuerpo}-{dv}"
 
         self.full_clean()
-        super().save(*args, **kwargs)
-        
-        # Validar antes de guardar
-        self.full_clean()
+                
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.Nombre
+            return self.Nombre

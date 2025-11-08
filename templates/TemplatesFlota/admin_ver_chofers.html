@@ -14,9 +14,10 @@
     <thead>
         <tr>
             <th>Imagen</th>
-            <th>ID</th>
+            <th>RUT</th>
             <th>Nombre</th>
             <th>Fecha Nacimiento</th>
+            <th>Email</th> 
             <th>Teléfono</th>
             <th>Estado</th>
             <th>Horas</th>
@@ -28,9 +29,10 @@
             <td>
                 <img src="{% static 'images/fotoperfil.jpg' %}" alt="Foto de perfil" class="profile-img">
             </td>
-            <td>{{ chofer.BUTChofer }}</td>
+            <td>{{ chofer.RUTChofer }}</td>
             <td>{{ chofer.Nombre }}</td>
             <td>{{ chofer.Fecha_Nacimiento }}</td>
+            <td>{{ chofer.usuario.email }}</td> 
             <td>{{ chofer.Telefono }}</td>
             <td>{{ chofer.Estado }}</td>
             <td>{{ chofer.Horas }}</td>

@@ -1,51 +1,61 @@
 {% extends 'TemplatesFlota/base.html' %}
 
-{% block title %}Agregar Combustible{% endblock %}
+{% block title %}Agregar Combustible (Mecánico){% endblock %}
 
 {% block menu %}
     <a href="{% url 'mecanico_dashboard' %}">Volver al Panel</a>
-    <a href="{% url 'mecanico_ver_combustible' %}">Ver Combustible</a>
 {% endblock %}
 
 {% block content %}
 <h2>Agregar Registro de Combustible</h2>
 <form method="post">
     {% csrf_token %}
+
     <div class="form-group">
-        <label for="tipo_combustible">Tipo de Combustible:</label>
-        <select id="tipo_combustible" name="tipo_combustible" required>
-            <option value="93">93 Octanos</option>
-            <option value="95">95 Octanos</option>
-            <option value="97">97 Octanos</option>
-            <option value="Diesel">Diesel</option>
-            <option value="Gas">Gas</option>
+        <label for="vehiculo">Vehículo:</label>
+        <select id="vehiculo" name="vehiculo" required>
+            <option value="" disabled selected>Seleccione un vehículo</option>
+            {% for v in todos_los_vehiculos %}
+                <option value="{{ v.patente }}">{{ v.patente }} - {{ v.marca }} {{ v.modelo }}</option>
+            {% endfor %}
         </select>
     </div>
     
+    <div class="form-group">
+        <label for="tipo_combustible">Tipo de Combustible:</label>
+        <select id="tipo_combustible" name="tipo_combustible" required>
+            <option value="93">93</option>
+            <option value="95">95</option>
+            <option value="97">97</option>
+            <option value="Diésel">Diésel</option>
+            <option value="Eléctrico">Eléctrico</option>
+            <option value="GLP">GLP</option>
+        </select>
+    </div>
+
     <div class="form-group">
         <label for="fecha_recarga">Fecha de Recarga:</label>
         <input type="date" id="fecha_recarga" name="fecha_recarga" required>
     </div>
-    
+
     <div class="form-group">
         <label for="lugar">Lugar:</label>
         <input type="text" id="lugar" name="lugar" required>
     </div>
-    
-    
+
     <div class="form-group">
-        <label for="cantidad_estanque">Cantidad de Estanque (litros):</label>
-        <input type="number" id="cantidad_estanque" name="cantidad_estanque" step="0.1" required>
+        <label for="cantidad_estanque">Cantidad (Litros):</label>
+        <input type="number" step="0.01" id="cantidad_estanque" name="cantidad_estanque" required>
     </div>
-    
+
     <div class="form-group">
         <label for="recargar">Recargar:</label>
         <select id="recargar" name="recargar" required>
-            <option value="Sí">Sí</option>
+            <option value="Si">Sí</option>
             <option value="No">No</option>
         </select>
     </div>
-    
+
     <input type="submit" value="Agregar Registro">
 </form>
 {% endblock %}

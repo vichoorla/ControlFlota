@@ -17,7 +17,7 @@
     
     <div class="form-group">
         <label for="vin">VIN:</label>
-        <input type="text" id="vin" name="vin" required>
+        <input type="text" id="vin" name="vin" required maxlength="17">
     </div>
     
     <div class="form-group">
@@ -32,32 +32,66 @@
     
     <div class="form-group">
         <label for="año">Año:</label>
-        <input type="text" id="año" name="año" required>
+        <input type="number" id="año" name="año" required>
     </div>
     
     <div class="form-group">
         <label for="motor">Motor:</label>
         <input type="text" id="motor" name="motor" required>
     </div>
-    
+
     <div class="form-group">
-        <label for="seguro">Seguro:</label>
-        <input type="text" id="seguro" name="seguro" required>
+        <label for="tipo">Tipo de Vehículo:</label>
+        <select id="tipo" name="tipo" required>
+            <option value="" disabled selected>Seleccione un tipo</option>
+            {% for tipo in tipos_vehiculo %}
+                <option value="{{ tipo.ID_Tipo }}">{{ tipo.nombre }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="chofer_asignado">Chofer Asignado:</label>
+        <select id="chofer_asignado" name="chofer_asignado">
+            <option value="">Sin Asignar</option> {% for chofer in choferes %}
+                <option value="{{ chofer.usuario.id }}">{{ chofer.Nombre }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="kilometraje">Kilometraje:</label>
+        <input type="number" id="kilometraje" name="kilometraje" value="0" required>
     </div>
     
     <div class="form-group">
-        <label for="revision_tecnica">Revisión Técnica:</label>
-        <input type="text" id="revision_tecnica" name="revision_tecnica" required>
+        <label for="estanque">Capacidad Estanque (Lts):</label>
+        <input type="number" step="0.01" id="estanque" name="estanque" required>
+    </div>
+
+    <div class="form-group">
+        <label for="tonelaje">Tonelaje (Opcional):</label>
+        <input type="number" step="0.01" id="tonelaje" name="tonelaje">
+    </div>
+
+    <div class="form-group">
+        <label for="seguro">Seguro Vigente:</label>
+        <input type="checkbox" id="seguro" name="seguro" checked>
     </div>
     
     <div class="form-group">
-        <label for="permiso_circulacion">Permiso de Circulación:</label>
-        <input type="text" id="permiso_circulacion" name="permiso_circulacion" required>
+        <label for="revision_tecnica">Revisión Técnica Vigente:</label>
+        <input type="checkbox" id="revision_tecnica" name="revision_tecnica" checked>
     </div>
     
     <div class="form-group">
-        <label for="gps">GPS:</label>
-        <input type="text" id="gps" name="gps" required>
+        <label for="permiso_circulacion">Permiso de Circulación Vigente:</label>
+        <input type="checkbox" id="permiso_circulacion" name="permiso_circulacion" checked>
+    </div>
+    
+    <div class="form-group">
+        <label for="gps">GPS Activo:</label>
+        <input type="checkbox" id="gps" name="gps" checked>
     </div>
     
     <input type="submit" value="Agregar Vehículo">

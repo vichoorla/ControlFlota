@@ -12,8 +12,9 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>Tipo Mantención</th>
+            <th>Vehículo</th> <th>Mecánico</th> <th>Tipo Mantención</th>
             <th>Fecha</th>
+            <th>Lugar</th>
             <th>Descripción</th>
         </tr>
     </thead>
@@ -21,14 +22,14 @@
         {% for mantencion in mantenciones %}
         <tr>
             <td>{{ mantencion.ID_Mantencion }}</td>
-            <td>{{ mantencion.Tipo_Mantencion }}</td>
+            <td>{{ mantencion.vehiculo.patente }}</td> <td>{{ mantencion.mecanico.Nombre }}</td> <td>{{ mantencion.Tipo_Mantencion }}</td>
             <td>{{ mantencion.Fecha }}</td>
+            <td>{{ mantencion.Lugar }}</td>
             <td>{{ mantencion.Descripcion }}</td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="4">No hay registros de mantenciones.</td>
-        </tr>
+            <td colspan="7">No hay registros de mantenciones.</td> </tr>
         {% endfor %}
     </tbody>
 </table>
