@@ -16,7 +16,6 @@ from pathlib import Path
 import os
 import pymysql
 pymysql.install_as_MySQLdb()
-from . import fix_mariadb 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -50,9 +49,8 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -62,10 +60,11 @@ ROOT_URLCONF = 'ControlFlota.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'Templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -85,7 +84,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'controlflota',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': '230704',
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -93,6 +92,8 @@ DATABASES = {
 
 MIGRATION_MODULES = {
 }
+
+AUTH_USER_MODEL = 'AppFlota.Usuario'
 
 
 # Password validation
@@ -133,10 +134,16 @@ STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_AGE = 3600
+
+# Redirecciones de autenticación
+LOGIN_URL = '/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'

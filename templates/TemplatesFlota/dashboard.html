@@ -1,0 +1,126 @@
+{% extends 'TemplatesFlota/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+    <!-- Header de Página -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="page-title">📊 Panel de Administración</h1>
+                    <p class="page-subtitle">Bienvenido de vuelta, <strong>{{ nombre_usuario }}</strong>. Aquí tienes un resumen de tu flota.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas Principales -->
+    <div class="row">
+        <!-- Vehículos Activos -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card stat-card-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-number">{{ vehiculos_activos }}</div>
+                            <div class="stat-label">Vehículos Activos</div>
+                        </div>
+                        <div class="stat-icon" style="font-size: 2.5rem;">
+                            🚛
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conductores en Ruta -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card stat-card-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-number">{{ conductores_ruta }}</div>
+                            <div class="stat-label">Conductores en Ruta</div>
+                        </div>
+                        <div class="stat-icon" style="font-size: 2.5rem;">
+                            👨‍✈️
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mantenciones Pendientes -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card stat-card-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-number">3</div>
+                            <div class="stat-label">Mant. Pendientes</div>
+                        </div>
+                        <div class="stat-icon" style="font-size: 2.5rem;">
+                            🔧
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Eficiencia Combustible -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card stat-card-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-number">85%</div>
+                            <div class="stat-label">Eficiencia</div>
+                        </div>
+                        <div class="stat-icon" style="font-size: 2.5rem;">
+                            ⛽
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones Rápidas -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">🚀 Acciones Rápidas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 col-6 mb-3">
+                            <a href="{% url 'admin_ver_vehiculos' %}" class="btn btn-modern btn-primary w-100">
+                                <i class="cil-car-alt me-2"></i>Gestionar Vehículos
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6 mb-3">
+                            <a href="{% url 'admin_ver_chofers' %}" class="btn btn-modern btn-success w-100">
+                                <i class="cil-user me-2"></i>Ver Conductores
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6 mb-3">
+                            <a href="{% url 'admin_ver_mantenciones' %}" class="btn btn-modern btn-warning w-100">
+                                <i class="cil-wrench me-2"></i>Mantenciones
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6 mb-3">
+                            <a href="{% url 'admin_ver_combustible' %}" class="btn btn-modern btn-info w-100">
+                                <i class="cil-gas-station me-2"></i>Combustible
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

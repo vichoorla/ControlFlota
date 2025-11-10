@@ -1,0 +1,158 @@
+{% extends 'TemplatesFlota/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-plus"></i> Agregar Nueva Mantención
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" id="mantencionForm">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <!-- Vehículo -->
+                                <div class="mb-3">
+                                    <label for="vehiculo" class="form-label fw-bold">Vehículo *</label>
+                                    <select class="form-select" id="vehiculo" name="vehiculo" required>
+                                        <option value="">Seleccione un vehículo</option>
+                                        {% for vehiculo in vehiculos %}
+                                            <option value="{{ vehiculo.patente }}">
+                                                {{ vehiculo.patente }} - {{ vehiculo.marca }} {{ vehiculo.modelo }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <!-- Mecánico -->
+                                <div class="mb-3">
+                                    <label for="mecanico" class="form-label fw-bold">Mecánico *</label>
+                                    <select class="form-select" id="mecanico" name="mecanico" required>
+                                        <option value="">Seleccione un mecánico</option>
+                                        {% for mecanico in mecanicos %}
+                                            <option value="{{ mecanico.RUT_Mecanico }}">
+                                                {{ mecanico.Nombre }} - {{ mecanico.RUT_Mecanico }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <!-- Tipo de Mantención -->
+                                <div class="mb-3">
+                                    <label for="Tipo_Mantencion" class="form-label fw-bold">Tipo de Mantención *</label>
+                                    <select class="form-select" id="Tipo_Mantencion" name="Tipo_Mantencion" required>
+                                        <option value="">Seleccione tipo</option>
+                                        {% for tipo in tipos_mantencion %}
+                                            <option value="{{ tipo }}">{{ tipo }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <!-- Fecha -->
+                                <div class="mb-3">
+                                    <label for="Fecha" class="form-label fw-bold">Fecha *</label>
+                                    <input type="date" class="form-control" id="Fecha" name="Fecha" 
+                                           value="{{ fecha_hoy }}" required>
+                                </div>
+
+                                <!-- Lugar -->
+                                <div class="mb-3">
+                                    <label for="Lugar" class="form-label">Lugar</label>
+                                    <input type="text" class="form-control" id="Lugar" name="Lugar" 
+                                           placeholder="Ej: Taller Central">
+                                </div>
+
+                                <!-- Descripción -->
+                                <div class="mb-3">
+                                    <label for="Descripcion" class="form-label fw-bold">Descripción *</label>
+                                    <textarea class="form-control" id="Descripcion" name="Descripcion" 
+                                              rows="3" placeholder="Describa el trabajo a realizar..." required></textarea>
+                                    <small class="form-text text-muted">Mínimo 10 caracteres</small>
+                                    <div class="form-text text-danger" id="descripcionError" style="display: none;">
+                                        La descripción debe tener al menos 10 caracteres
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{% url 'admin_ver_mantenciones' %}" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left"></i> Cancelar
+                                    </a>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-save"></i> Guardar Mantención
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('mantencionForm');
+    const descripcionInput = document.getElementById('Descripcion');
+    const descripcionError = document.getElementById('descripcionError');
+
+    // Validar descripción en tiempo real
+    descripcionInput.addEventListener('input', function() {
+        if (this.value.length < 10) {
+            descripcionError.style.display = 'block';
+            this.classList.add('is-invalid');
+        } else {
+            descripcionError.style.display = 'none';
+            this.classList.remove('is-invalid');
+        }
+    });
+
+    // Validar formulario antes de enviar
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+
+        // Validar descripción
+        if (descripcionInput.value.length < 10) {
+            descripcionError.style.display = 'block';
+            descripcionInput.classList.add('is-invalid');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            alert('❌ Por favor complete todos los campos requeridos correctamente');
+        }
+    });
+});
+</script>
+
+<style>
+.form-label {
+    margin-bottom: 0.5rem;
+}
+.form-text {
+    font-size: 0.875rem;
+}
+</style>
+{% endblock %}

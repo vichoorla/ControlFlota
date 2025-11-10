@@ -1,0 +1,96 @@
+{% extends 'TemplatesFlota/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Editar Chofer</h2>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="text-primary">Datos de Cuenta</h5>
+                        
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" 
+                                   value="{{ chofer.usuario.username }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email_usuario" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email_usuario" name="email_usuario" 
+                                   value="{{ chofer.usuario.email }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre Completo</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" 
+                                   value="{{ chofer.Nombre }}" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h5 class="text-primary">Datos Personales</h5>
+                        
+                        <div class="mb-3">
+                            <label for="RUTChofer" class="form-label">RUT</label>
+                            <input type="text" class="form-control" id="RUTChofer" name="RUTChofer" 
+                                   value="{{ chofer.RUTChofer }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
+                            <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" 
+                                   value="{{ chofer.Fecha_Nacimiento|date:'Y-m-d' }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="telefono" class="form-label">Teléfono</label>
+                            <input type="text" class="form-control" id="telefono" name="telefono" 
+                                   value="{{ chofer.Telefono }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="estado" class="form-label">Estado</label>
+                            <select class="form-select" id="estado" name="estado" required>
+                                <option value="Activo" {% if chofer.Estado == 'Activo' %}selected{% endif %}>Activo</option>
+                                <option value="Inactivo" {% if chofer.Estado == 'Inactivo' %}selected{% endif %}>Inactivo</option>
+                                <option value="Vacaciones" {% if chofer.Estado == 'Vacaciones' %}selected{% endif %}>Vacaciones</option>
+                                <option value="Licencia" {% if chofer.Estado == 'Licencia' %}selected{% endif %}>Licencia</option>
+                                <option value="Suspendido" {% if chofer.Estado == 'Suspendido' %}selected{% endif %}>Suspendido</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="horas" class="form-label">Horas Trabajadas</label>
+                            <input type="number" class="form-control" id="horas" name="horas" 
+                                   value="{{ chofer.Horas }}" required min="0" max="999">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Guardar Cambios
+                    </button>
+                    <a href="{% url 'admin_ver_chofers' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

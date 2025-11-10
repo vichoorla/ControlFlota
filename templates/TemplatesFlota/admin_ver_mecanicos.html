@@ -1,50 +1,164 @@
 {% extends 'TemplatesFlota/base.html' %}
-{% load static %}
-
-{% block title %}Ver Mecánicos{% endblock %}
-
-{% block menu %}
-    <a href="{% url 'admin_dashboard' %}">Volver al Panel</a>
-    <a href="{% url 'admin_agregar_mecanico' %}">Agregar Mecánico</a>
-{% endblock %}
 
 {% block content %}
-<h2>Lista de Mecánicos</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Imagen</th>
-            <th>RUT</th>
-            <th>Nombre</th>
-            <th>Usuario</th>
-            <th>Email</th>
-            <th>Teléfono</th>
-            <th>Teléfono</th>
-            <th>Estado</th>
-            <th>Taller</th>
-            <th>Horas</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for mecanico in mecanicos %}
-        <tr>
-            <td>
-                <img src="{% static 'images/fotoperfil.jpg' %}" alt="Foto de perfil" class="profile-img">
-            </td>
-            <td>{{ mecanico.RUT_Mecanico }}</td>
-            <td>{{ mecanico.Nombre }}</td>
-            <td>{{ mecanico.usuario.username }}</td>
-            <td>{{ mecanico.usuario.email }}</td>
-            <td>{{ mecanico.Telefono }}</td>
-            <td>{{ mecanico.Estado }}</td>
-            <td>{{ mecanico.Taller }}</td>
-            <td>{{ mecanico.Horas }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="9">No hay mecánicos registrados.</td>
-        </tr>
+<div class="container mt-4">
+    <h2>Gestión de Mecánicos</h2>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
         {% endfor %}
-    </tbody>
-</table>
+    {% endif %}
+
+    <!-- Estadísticas MEJORADAS -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary">
+                <div class="card-body text-center">
+                    <h4 class="card-title">{{ total_mecanicos }}</h4>
+                    <p class="card-text">Total Mecánicos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success">
+                <div class="card-body text-center">
+                    <h4 class="card-title">{{ mecanicos_activos }}</h4>
+                    <p class="card-text">Activos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-info">
+                <div class="card-body text-center">
+                    <h4 class="card-title">{{ total_mantenimientos }}</h4>
+                    <p class="card-text">Mantenimientos Realizados</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón agregar MEJORADO -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <a href="{% url 'admin_agregar_mecanico' %}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Agregar Mecánico
+            </a>
+        </div>
+        <div class="text-muted">
+            <small>Mostrando {{ mecanicos.count }} mecánico(s)</small>
+        </div>
+    </div>
+
+    <!-- Tabla de mecánicos MEJORADA -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="fas fa-tools"></i> Lista de Mecánicos</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>RUT</th>
+                            <th>Nombre</th>
+                            <th>Teléfono</th>
+                            <th>Taller</th>
+                            <th>Estado</th>
+                            <th>Horas</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mecanico in mecanicos %}
+                        <tr>
+                            <td>
+                                <strong class="text-primary">{{ mecanico.RUT_Mecanico }}</strong>
+                            </td>
+                            <td>{{ mecanico.Nombre }}</td>
+                            <td>
+                                {% if mecanico.Telefono %}
+                                    {{ mecanico.Telefono }}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ mecanico.Taller }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if mecanico.Estado == 'Activo' %}bg-success
+                                    {% elif mecanico.Estado == 'Vacaciones' %}bg-warning text-dark
+                                    {% elif mecanico.Estado == 'Licencia' %}bg-info
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ mecanico.Estado }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-primary">{{ mecanico.Horas }} hrs</span>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <!-- Botón Editar -->
+                                    <a href="{% url 'admin_editar_mecanico' mecanico.RUT_Mecanico %}" class="btn btn-warning text-white" title="Editar">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </a>
+                                    <!-- Botón Eliminar -->
+                                    <a href="{% url 'admin_eliminar_mecanico' mecanico.RUT_Mecanico %}" class="btn btn-danger text-white" title="Eliminar">
+                                        <i class="fas fa-trash"></i> Eliminar
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                <div class="text-muted">
+                                    <i class="fas fa-tools fa-2x mb-2"></i>
+                                    <p>No hay mecánicos registrados</p>
+                                    <a href="{% url 'admin_agregar_mecanico' %}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-plus"></i> Agregar primer mecánico
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.btn-group-sm > .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    margin: 0 2px;
+    white-space: nowrap;
+}
+.btn-warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+.btn-warning:hover {
+    background-color: #e0a800;
+    border-color: #e0a800;
+}
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #c82333;
+}
+.btn-outline-info:hover {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+    color: #000;
+}
+</style>
 {% endblock %}

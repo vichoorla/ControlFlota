@@ -1,0 +1,81 @@
+{% extends 'TemplatesFlota/base.html' %}
+{% load static %}
+
+{% block title %}Editar Tipo de Vehículo - ControlFlota{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="cil-pencil me-2"></i>
+                        ✏️ Editar Tipo de Vehículo
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="nombre" class="form-label">Nombre del Tipo *</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" 
+                                   value="{{ tipo.nombre }}" required maxlength="50" 
+                                   placeholder="Ej: Camión, Furgón, Pickup, Automóvil">
+                            <div class="invalid-feedback">Por favor ingresa el nombre del tipo de vehículo.</div>
+                            <div class="form-text">
+                                Este nombre se usará para clasificar los vehículos en el sistema.
+                            </div>
+                        </div>
+
+                        <!-- Información Adicional -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">📊 Información del Tipo</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <strong>Vehículos Asociados:</strong><br>
+                                        <span class="badge bg-info fs-6">{{ tipo.vehiculo_set.count }}</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Estado:</strong><br>
+                                        <span class="badge {% if tipo.vehiculo_set.count > 0 %}bg-success{% else %}bg-secondary{% endif %}">
+                                            {% if tipo.vehiculo_set.count > 0 %}En uso{% else %}Sin uso{% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{% url 'admin_ver_tipos_vehiculo' %}" class="btn btn-outline-secondary">
+                                <i class="cil-arrow-left me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="cil-save me-2"></i>Actualizar Tipo
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    padding: 0.75rem;
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+</style>
+{% endblock %}

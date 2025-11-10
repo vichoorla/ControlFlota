@@ -1,0 +1,148 @@
+{% extends 'TemplatesFlota/base.html' %}
+{% load static %}
+
+{% block title %}Vehículos - ControlFlota{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h1 class="page-title">🚗 Gestión de Vehículos</h1>
+                            <p class="page-subtitle">Administra todos los vehículos de tu flota</p>
+                        </div>
+                        <a href="{% url 'admin_agregar_vehiculo' %}" class="btn btn-modern btn-primary">
+                            <i class="cil-plus me-2"></i>Agregar Vehículo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card stat-card stat-card-primary">
+                <div class="card-body">
+                    <div class="stat-number">{{ total_vehiculos }}</div>
+                    <div class="stat-label">Total Vehículos</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card stat-card stat-card-success">
+                <div class="card-body">
+                    <div class="stat-number">{{ vehiculos_con_chofer }}</div>
+                    <div class="stat-label">Con Chofer</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card stat-card stat-card-warning">
+                <div class="card-body">
+                    <div class="stat-number">{{ vehiculos_sin_chofer }}</div>
+                    <div class="stat-label">Disponibles</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Vehículos -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    {% if vehiculos %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Patente</th>
+                                    <th>Marca/Modelo</th>
+                                    <th>Año</th>
+                                    <th>Tipo</th>
+                                    <th>Chofer</th>
+                                    <th>Kilometraje</th>
+                                    <th>Documentación</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for vehiculo in vehiculos %}
+                                <tr>
+                                    <td>
+                                        <strong class="text-primary">{{ vehiculo.patente }}</strong>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold">{{ vehiculo.marca }}</div>
+                                        <small class="text-muted">{{ vehiculo.modelo }}</small>
+                                    </td>
+                                    <td>{{ vehiculo.año }}</td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ vehiculo.Tipo.nombre }}</span>
+                                    </td>
+                                    <td>
+                                        {% if vehiculo.chofer_asignado %}
+                                        <span class="badge bg-success">{{ vehiculo.chofer_asignado.Nombre }}</span>
+                                        {% else %}
+                                        <span class="badge bg-warning">Sin asignar</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="text-nowrap">{{ vehiculo.kilometraje }} km</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            {% if vehiculo.seguro %}
+                                            <span class="badge bg-success" title="Seguro">S</span>
+                                            {% endif %}
+                                            {% if vehiculo.revision_tecnica %}
+                                            <span class="badge bg-info" title="Revisión Técnica">RT</span>
+                                            {% endif %}
+                                            {% if vehiculo.permiso_circulacion %}
+                                            <span class="badge bg-primary" title="Permiso Circulación">PC</span>
+                                            {% endif %}
+                                            {% if vehiculo.gps %}
+                                            <span class="badge bg-dark" title="GPS">GPS</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="#" class="btn btn-sm btn-outline-primary" title="Ver Detalles">
+                                                <i class="cil-magnifying-glass"></i>
+                                            </a>
+                                            <a href="#" class="btn btn-sm btn-outline-warning" title="Editar">
+                                                <i class="cil-pencil"></i>
+                                            </a>
+                                            <a href="#" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                                <i class="cil-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="cil-car-alt display-1 text-muted"></i>
+                        <h4 class="mt-3 text-muted">No hay vehículos registrados</h4>
+                        <p class="text-muted">Comienza agregando el primer vehículo a tu flota.</p>
+                        <a href="{% url 'admin_agregar_vehiculo' %}" class="btn btn-primary btn-lg">
+                            <i class="cil-plus me-2"></i>Agregar Primer Vehículo
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

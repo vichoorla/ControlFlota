@@ -1,37 +1,198 @@
 {% extends 'TemplatesFlota/base.html' %}
-{% load static %}
-
-{% block title %}Panel de Chofer{% endblock %}
-
-{% block menu %}
-    <a href="{% url 'chofer_agregar_combustible' %}">Agregar Combustible</a>
-    <a href="{% url 'chofer_ver_combustible' %}">Ver Combustible</a>
-{% endblock %}
 
 {% block content %}
-<h2>Panel de Chofer</h2>
-<div class="profile-header">
-    <img src="{% static 'images/fotoperfil.jpg' %}" alt="Foto de perfil">
-    <div>
-        <p>Bienvenido, {{ nombre_usuario }}</p>
-        <p>Rol: Chofer</p>
+<div class="container mt-4">
+    <h2>Dashboard - Chofer</h2>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Información del Chofer -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-user"></i> Información del Chofer
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <strong>Nombre:</strong> {{ chofer.Nombre }}<br>
+                    <strong>RUT:</strong> {{ chofer.RUT_Chofer }}<br>
+                    <strong>Teléfono:</strong> {{ chofer.Telefono }}
+                </div>
+                <div class="col-md-6">
+                    <strong>Estado:</strong> <span class="badge bg-success">{{ chofer.Estado }}</span><br>
+                    <strong>Taller:</strong> {{ chofer.Taller }}<br>
+                    <strong>Horas trabajadas:</strong> {{ chofer.Horas }} hrs
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body text-center">
+                    <h4 class="card-title">{{ total_vehiculos }}</h4>
+                    <p class="card-text">Vehículos Asignados</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body text-center">
+                    <h4 class="card-title">{{ vehiculos_documentados }}</h4>
+                    <p class="card-text">Documentación al Día</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body text-center">
+                    <h4 class="card-title">{{ total_vehiculos }}</h4>
+                    <p class="card-text">Disponibles</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body text-center">
+                    <h4 class="card-title">0</h4>
+                    <p class="card-text">Mantenimientos</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vehículos Asignados -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="fas fa-car-side"></i> Mis Vehículos Asignados</h5>
+        </div>
+        <div class="card-body">
+            {% if vehiculos %}
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Patente</th>
+                            <th>Marca</th>
+                            <th>Modelo</th>
+                            <th>Año</th>
+                            <th>Kilometraje</th>
+                            <th>Estanque</th>
+                            <th>Estado Documentación</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vehiculo in vehiculos %}
+                        <tr>
+                            <td>
+                                <strong class="text-primary">{{ vehiculo.patente }}</strong>
+                            </td>
+                            <td>{{ vehiculo.marca }}</td>
+                            <td>{{ vehiculo.modelo }}</td>
+                            <td>
+                                <span class="badge bg-secondary">{{ vehiculo.año }}</span>
+                            </td>
+                            <td>{{ vehiculo.kilometraje }} km</td>
+                            <td>
+                                {% if vehiculo.estanque %}
+                                    <span class="badge bg-primary">{{ vehiculo.estanque }} L</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if vehiculo.seguro and vehiculo.revision_tecnica and vehiculo.permiso_circulacion %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle"></i> Al Día
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-exclamation-triangle"></i> Pendiente
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{% url 'chofer_detalle_vehiculo' vehiculo.patente %}" class="btn btn-info text-white" title="Ver Detalles">
+                                        <i class="fas fa-eye"></i> Ver
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <div class="text-muted">
+                    <i class="fas fa-car fa-2x mb-2"></i>
+                    <p>No tienes vehículos asignados</p>
+                    <p class="small">Contacta con el administrador para que te asigne un vehículo.</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Información Importante -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="fas fa-info-circle"></i> Información Importante</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><i class="fas fa-check text-success"></i> Verifica la documentación antes de cada viaje</li>
+                        <li class="mb-2"><i class="fas fa-check text-success"></i> Reporta cualquier problema mecánico inmediatamente</li>
+                        <li class="mb-2"><i class="fas fa-check text-success"></i> Mantén el vehículo limpio y en buen estado</li>
+                        <li class="mb-0"><i class="fas fa-check text-success"></i> Revisa niveles de combustible y aceite regularmente</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Contacto de Emergencia</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>Administrador de Flota:</strong></p>
+                    <p class="mb-1"><i class="fas fa-phone"></i> Teléfono: +56 9 1234 5678</p>
+                    <p class="mb-0"><i class="fas fa-envelope"></i> Email: flota@empresa.com</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-<hr> 
-
-<h3>Mi Vehículo Asignado</h3>
-
-{% if vehiculos %}
-    {% for vehiculo in vehiculos %}
-        <div class="vehiculo-info" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
-            <h4>Patente: {{ vehiculo.patente }}</h4>
-            <p><strong>Modelo:</strong> {{ vehiculo.marca }} {{ vehiculo.modelo }}</p>
-            <p><strong>Año:</strong> {{ vehiculo.año }}</p>
-            <p><strong>Kilometraje:</strong> {{ vehiculo.kilometraje }} km</p>
-        </div>
-    {% endfor %}
-{% else %}
-    <p>No tienes ningún vehículo asignado actualmente.</p>
-{% endif %}
+<style>
+.btn-group-sm > .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    margin: 0 2px;
+    white-space: nowrap;
+}
+.btn-info {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+}
+.btn-info:hover {
+    background-color: #31d2f2;
+    border-color: #31d2f2;
+}
+</style>
 {% endblock %}

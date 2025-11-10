@@ -1,68 +1,160 @@
 {% extends 'TemplatesFlota/base.html' %}
 
-{% block title %}Agregar Chofer{% endblock %}
-
-{% block menu %}
-    <a href="{% url 'admin_dashboard' %}">Volver al Panel</a>
-{% endblock %}
-
 {% block content %}
-<h2>Agregar Chofer</h2>
-<form method="post">
-    {% csrf_token %}
-    
-    <h3>Datos de la Cuenta de Usuario</h3>
-    <div class="form-group">
-        <label for="username">Nombre de Usuario:</label>
-        <input type="text" id="username" name="username" required>
-    </div>
-    <div class="form-group">
-        <label for="password">Contraseña:</label>
-        <input type="password" id="password" name="password" required>
-    </div>
+<div class="container mt-4">
+    <h2>Agregar Nuevo Chofer</h2>
 
-    <div class="form-group">
-        <label for="email_usuario">Email (Usuario):</label>
-        <input type="email" id="email_usuario" name="email_usuario" required>
-    </div>
+    <!-- Mostrar errores de validación -->
+    {% if messages %}
+        <div class="mb-3">
+            {% for message in messages %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Error:</strong> {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
-    <h3>Datos Personales del Chofer</h3>
-    <div class="form-group">
-        <label for="RUTChofer">RUT Chofer:</label>
-        <input type="text" id="RUTChofer" name="RUTChofer" placeholder="12345678-9" required>
+    <div class="card">
+        <div class="card-body">
+            <form method="post" id="choferForm">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <!-- Datos de Usuario -->
+                    <div class="col-md-6">
+                        <h5 class="text-primary">Datos de Cuenta</h5>
+                        
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username *</label>
+                            <input type="text" class="form-control {% if messages and 'username' in message.tags %}is-invalid{% endif %}" 
+                                   id="username" name="username" 
+                                   placeholder="Ej: juan.perez" required
+                                   pattern="[a-zA-Z0-9._]+" title="Solo letras, números, . y _">
+                            <div class="invalid-feedback">
+                                El username es requerido y debe contener solo letras, números, . y _
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Contraseña *</label>
+                            <input type="password" class="form-control" id="password" name="password" 
+                                   placeholder="Mínimo 8 caracteres" required minlength="8">
+                            <div class="form-text">La contraseña debe tener al menos 8 caracteres</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email_usuario" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email_usuario" name="email_usuario" 
+                                   placeholder="ejemplo@correo.com">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre Completo *</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" 
+                                   placeholder="Ej: Juan Pérez González" required
+                                   pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="Solo letras y espacios">
+                        </div>
+                    </div>
+
+                    <!-- Datos de Chofer -->
+                    <div class="col-md-6">
+                        <h5 class="text-primary">Datos Personales</h5>
+                        
+                        <div class="mb-3">
+                            <label for="RUTChofer" class="form-label">RUT *</label>
+                            <input type="text" class="form-control {% if messages and 'RUTChofer' in message.tags %}is-invalid{% endif %}" 
+                                   id="RUTChofer" name="RUTChofer" 
+                                   placeholder="Ej: 12.345.678-9 o 12345678-9" required
+                                   pattern="\d{1,2}\.\d{3}\.\d{3}-[0-9kK]|\d{7,8}-[0-9kK]">
+                            <div class="form-text">Formato: 12.345.678-9 o 12345678-9</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento *</label>
+                            <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" 
+                                   max="{{ today|date:'Y-m-d' }}" required>
+                            <div class="form-text">Debe tener entre 21 y 75 años</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="telefono" class="form-label">Teléfono *</label>
+                            <input type="text" class="form-control {% if messages and 'Telefono' in message.tags %}is-invalid{% endif %}" 
+                                   id="telefono" name="telefono" 
+                                   placeholder="Ej: 912345678 o +56 9 1234 5678" required
+                                   pattern="(\+56 9 \d{4} \d{4}|9\d{8})">
+                            <div class="form-text">Formato: 912345678 o +56 9 1234 5678</div>
+                            <div class="invalid-feedback">
+                                Formato inválido. Use: 912345678 o +56 9 1234 5678
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="estado" class="form-label">Estado *</label>
+                            <select class="form-select" id="estado" name="estado" required>
+                                <option value="">Seleccione estado</option>
+                                <option value="Activo">Activo</option>
+                                <option value="Inactivo">Inactivo</option>
+                                <option value="Vacaciones">Vacaciones</option>
+                                <option value="Licencia">Licencia</option>
+                                <option value="Suspendido">Suspendido</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="horas" class="form-label">Horas Trabajadas *</label>
+                            <input type="number" class="form-control" id="horas" name="horas" 
+                                   placeholder="Ej: 160" required min="0" max="999"
+                                   pattern="\d{1,3}" title="Máximo 999 horas">
+                            <div class="form-text">Número entre 0 y 999</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Guardar Chofer
+                    </button>
+                    <a href="{% url 'admin_ver_chofers' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
+</div>
+
+<!-- Script para validación en tiempo real -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('choferForm');
+    const telefonoInput = document.getElementById('telefono');
     
-    <div class="form-group">
-        <label for="nombre">Nombre Completo:</label>
-        <input type="text" id="nombre" name="nombre" required>
-    </div>
-    
-    <div class="form-group">
-        <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
-        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
-    </div>
-    
-    <div class="form-group">
-        <label for="telefono">Teléfono:</label>
-        <input type="text" id="telefono" name="telefono" placeholder="+56912345678" required>
-    </div>
-    
-    <div class="form-group">
-        <label for="estado">Estado:</label>
-        <select id="estado" name="estado" required>
-            <option value="Activo">Activo</option>
-            <option value="Inactivo">Inactivo</option>
-            <option value="Vacaciones">Vacaciones</option>
-            <option value="Licencia">Licencia</option>
-            <option value="Suspendido">Suspendido</option>
-        </select>
-    </div>
-    
-    <div class="form-group">
-        <label for="horas">Horas:</label>
-        <input type="number" id="horas" name="horas" value="0" required>
-    </div>
-    
-    <input type="submit" value="Agregar Chofer">
-</form>
+    // Validar formato de teléfono en tiempo real
+    telefonoInput.addEventListener('input', function() {
+        const telefono = this.value;
+        const pattern = /^(\+56 9 \d{4} \d{4}|9\d{8})$/;
+        
+        if (telefono && !pattern.test(telefono)) {
+            this.classList.add('is-invalid');
+        } else {
+            this.classList.remove('is-invalid');
+        }
+    });
+
+    // Validar RUT en tiempo real
+    const rutInput = document.getElementById('RUTChofer');
+    rutInput.addEventListener('input', function() {
+        const rut = this.value;
+        const pattern = /^\d{1,2}\.\d{3}\.\d{3}-[0-9kK]|\d{7,8}-[0-9kK]$/;
+        
+        if (rut && !pattern.test(rut)) {
+            this.classList.add('is-invalid');
+        } else {
+            this.classList.remove('is-invalid');
+        }
+    });
+});
+</script>
 {% endblock %}

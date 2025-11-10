@@ -3,6 +3,7 @@ from django.core.validators import RegexValidator, MinValueValidator, MaxValueVa
 from django.core.exceptions import ValidationError
 from datetime import date
 from django.core.validators import BaseValidator
+from django.contrib.auth.models import AbstractUser
 import re
 
 class EdadMinimaValidator(BaseValidator):
@@ -58,12 +59,12 @@ class RUTField(models.CharField):
 
 class Vehiculo(models.Model):
    patente = models.CharField(
-       max_length=8,
+       max_length=6,  # Cambiado de 8 a 6 (4 letras + 2 números)
        primary_key=True,
        validators=[
            RegexValidator(
-               regex=r'^[A-Z]{2}\d{4}$|^[A-Z]{2}\d{3}[A-Z]{2}$',
-               message='Formato de patente invalido. Use: AA1234 o AB1234CD'
+               regex=r'^[A-Z]{4}\d{2}$',  # ← CAMBIADO: 4 letras + 2 números
+               message='Formato de patente inválido. Use: ABCD12 (4 letras + 2 números)'
            )
        ]
    )
@@ -147,59 +148,23 @@ class Vehiculo(models.Model):
            raise ValidationError({'año': 'Año debe ser un número válido'})
 
 
-class Usuario(models.Model):
-    id = models.AutoField(primary_key=True)
-    
-    username = models.CharField(
-        max_length=50, 
-        unique=True,
-        validators=[
-            RegexValidator(
-                regex=r'^[a-zA-Z0-9_-]+$',
-                message='Username solo puede contener letras, números, guiones y underscores'
-            )
-        ])
-    
-    password = models.CharField(        
-        max_length=100,
-        validators=[
-            RegexValidator(
-                regex=r'^.{8,}$',
-                message='La contraseña debe tener al menos 8 caracteres'
-            )
-        ])
-    
-    nombre = models.CharField(        
-        max_length=60,
-        validators=[
-            RegexValidator(
-                regex=r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$',
-                message='Nombre solo puede contener letras y espacios'
-            )
-        ])
-    
-    email = models.CharField(       
-        max_length=80,
-        validators=[
-            RegexValidator(
-                regex=r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-                message='Formato de email inválido'
-            )
-        ])
-    
-    cargo = models.CharField(
-        max_length=20, 
-        choices=[
-        ('admin', 'Administrador'),
-        ('chofer', 'Chofer'), 
-        ('mecanico', 'Mecánico')
-    ])
+from django.contrib.auth.models import AbstractUser
+from django.core.validators import RegexValidator
+from django.db import models
 
-    class Meta:
-        db_table = 'appflota_usuario'
+class Usuario(AbstractUser):
+    cargo = models.CharField(
+        max_length=20,
+        choices=[
+            ('admin', 'Administrador'),
+            ('chofer', 'Chofer'),
+            ('mecanico', 'Mecánico')
+        ],
+        default='chofer'  # Agrega un valor por defecto
+    )
 
     def __str__(self):
-        return self.username
+        return f"{self.username} ({self.cargo})"
 
 class Mantencion(models.Model):
     ID_Mantencion = models.AutoField(primary_key=True)
@@ -273,13 +238,13 @@ class Mecanico(models.Model):
 
 
     Telefono = models.CharField(
-        max_length=45,
-        validators=[
-            RegexValidator(
-                regex=r'^\+56 9 \d{4} \d{4}$|^9\d{8}$',
-                message='Teléfono debe tener 9 dígitos comenzando con 9 o formato +56 9 XXXX XXXX'
-            )
-        ])
+    max_length=45,
+    validators=[
+        RegexValidator(
+            regex=r'^\+56 9 \d{4} \d{4}$|^9\d{8}$|^\d{9}$',  # ← Agregué |^\d{9}$
+            message='Teléfono debe tener 9 dígitos comenzando con 9 o formato +56 9 XXXX XXXX'
+        )
+    ])
 
     Estado = models.CharField(        
         max_length=45,

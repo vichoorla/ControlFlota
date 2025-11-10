@@ -1,0 +1,105 @@
+{% extends 'TemplatesFlota/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> Eliminar Mantención
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <div class="alert alert-warning">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-exclamation-circle"></i> ¿Está seguro que desea eliminar esta mantención?
+                        </h5>
+                        <p class="mb-0">Esta acción no se puede deshacer.</p>
+                    </div>
+
+                    <!-- Información de la Mantención -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h6 class="card-title text-danger">Información de la Mantención</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>ID:</strong><br>
+                                    #{{ mantencion.ID_Mantencion }}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Vehículo:</strong><br>
+                                    {{ mantencion.vehiculo.patente }} - {{ mantencion.vehiculo.marca }} {{ mantencion.vehiculo.modelo }}
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    <strong>Mecánico:</strong><br>
+                                    {{ mantencion.mecanico.Nombre }}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Tipo:</strong><br>
+                                    <span class="badge 
+                                        {% if mantencion.Tipo_Mantencion == 'Preventiva' %}bg-success
+                                        {% elif mantencion.Tipo_Mantencion == 'Correctiva' %}bg-warning text-dark
+                                        {% elif mantencion.Tipo_Mantencion == 'Predictiva' %}bg-info
+                                        {% else %}bg-primary{% endif %}">
+                                        {{ mantencion.Tipo_Mantencion }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    <strong>Fecha:</strong><br>
+                                    {{ mantencion.Fecha|date:"d/m/Y" }}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Lugar:</strong><br>
+                                    {{ mantencion.Lugar }}
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-12">
+                                    <strong>Descripción:</strong><br>
+                                    {{ mantencion.Descripcion }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulario de eliminación -->
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'admin_ver_mantenciones' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('¿Está completamente seguro? Esta acción eliminará permanentemente la mantención.')">
+                                <i class="fas fa-trash"></i> Confirmar Eliminación
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: 2px solid #dc3545;
+}
+.alert-warning {
+    border-left: 4px solid #ffc107;
+}
+</style>
+{% endblock %}

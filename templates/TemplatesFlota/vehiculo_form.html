@@ -1,0 +1,214 @@
+{% extends 'TemplatesFlota/base.html' %}
+{% load static %}
+
+{% block title %}Agregar Vehículo - ControlFlota{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="cil-car-alt me-2"></i>
+                        🚗 Agregar Nuevo Vehículo
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Información Básica -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2">📋 Información Básica</h5>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="patente" class="form-label">Patente *</label>
+                                <input type="text" class="form-control" id="patente" name="patente" 
+                                       required maxlength="10" placeholder="Ej: AB123CD">
+                                <div class="invalid-feedback">Por favor ingresa la patente del vehículo.</div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="vin" class="form-label">Número de Chasis (VIN)</label>
+                                <input type="text" class="form-control" id="vin" name="vin" 
+                                       placeholder="Número de identificación del vehículo">
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="marca" class="form-label">Marca *</label>
+                                <input type="text" class="form-control" id="marca" name="marca" 
+                                       required placeholder="Ej: Toyota, Chevrolet">
+                                <div class="invalid-feedback">Por favor ingresa la marca del vehículo.</div>
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="modelo" class="form-label">Modelo *</label>
+                                <input type="text" class="form-control" id="modelo" name="modelo" 
+                                       required placeholder="Ej: Hilux, Corsa">
+                                <div class="invalid-feedback">Por favor ingresa el modelo del vehículo.</div>
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="año" class="form-label">Año *</label>
+                                <input type="number" class="form-control" id="año" name="año" 
+                                       required min="1990" max="{% now 'Y' %}" 
+                                       placeholder="{% now 'Y' %}">
+                                <div class="invalid-feedback">Por favor ingresa el año del vehículo.</div>
+                            </div>
+                        </div>
+
+                        <!-- Especificaciones Técnicas -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2">🔧 Especificaciones Técnicas</h5>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="tipo" class="form-label">Tipo de Vehículo *</label>
+                                <select class="form-select" id="tipo" name="tipo" required>
+                                    <option value="">Seleccionar tipo...</option>
+                                    {% for tipo in tipos_vehiculo %}
+                                    <option value="{{ tipo.id }}">{{ tipo.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">Por favor selecciona el tipo de vehículo.</div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="motor" class="form-label">Motor</label>
+                                <input type="text" class="form-control" id="motor" name="motor" 
+                                       placeholder="Ej: 2.8L Turbo Diesel">
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="kilometraje" class="form-label">Kilometraje Actual</label>
+                                <input type="number" class="form-control" id="kilometraje" name="kilometraje" 
+                                       min="0" placeholder="0">
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="estanque" class="form-label">Capacidad Estanque (L)</label>
+                                <input type="number" class="form-control" id="estanque" name="estanque" 
+                                       min="0" step="0.1" placeholder="0.0">
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="tonelaje" class="form-label">Tonelaje (si aplica)</label>
+                                <input type="number" class="form-control" id="tonelaje" name="tonelaje" 
+                                       min="0" step="0.1" placeholder="0.0">
+                            </div>
+                        </div>
+
+                        <!-- Asignación y Documentación -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2">👨‍✈️ Asignación y Documentación</h5>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="chofer_asignado" class="form-label">Chofer Asignado</label>
+                                <select class="form-select" id="chofer_asignado" name="chofer_asignado">
+                                    <option value="">Sin asignar</option>
+                                    {% for chofer in choferes %}
+                                    <option value="{{ chofer.id }}">{{ chofer.Nombre }} - {{ chofer.RUTChofer }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col-12 mb-3">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">📄 Documentación Vigente</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-3 mb-2">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="seguro" name="seguro">
+                                                    <label class="form-check-label" for="seguro">Seguro al día</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 mb-2">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="revision_tecnica" name="revision_tecnica">
+                                                    <label class="form-check-label" for="revision_tecnica">Revisión Técnica</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 mb-2">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="permiso_circulacion" name="permiso_circulacion">
+                                                    <label class="form-check-label" for="permiso_circulacion">Permiso Circulación</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 mb-2">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="gps" name="gps">
+                                                    <label class="form-check-label" for="gps">Sistema GPS</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{% url 'admin_ver_vehiculos' %}" class="btn btn-outline-secondary">
+                                <i class="cil-arrow-left me-2"></i>Cancelar y Volver
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="cil-save me-2"></i>Guardar Vehículo
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    padding: 0.75rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.form-check-input:checked {
+    background-color: #667eea;
+    border-color: #667eea;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+}
+</style>
+
+<script>
+// Validación de formulario
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
+</script>
+{% endblock %}

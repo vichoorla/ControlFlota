@@ -1,36 +1,145 @@
 {% extends 'TemplatesFlota/base.html' %}
 
-{% block title %}Ver Mantenciones{% endblock %}
-
-{% block menu %}
-    <a href="{% url 'admin_dashboard' %}">Volver al Panel</a>
-{% endblock %}
-
 {% block content %}
-<h2>Registros de Mantenciones</h2>
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Vehículo</th> <th>Mecánico</th> <th>Tipo Mantención</th>
-            <th>Fecha</th>
-            <th>Lugar</th>
-            <th>Descripción</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for mantencion in mantenciones %}
-        <tr>
-            <td>{{ mantencion.ID_Mantencion }}</td>
-            <td>{{ mantencion.vehiculo.patente }}</td> <td>{{ mantencion.mecanico.Nombre }}</td> <td>{{ mantencion.Tipo_Mantencion }}</td>
-            <td>{{ mantencion.Fecha }}</td>
-            <td>{{ mantencion.Lugar }}</td>
-            <td>{{ mantencion.Descripcion }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="7">No hay registros de mantenciones.</td> </tr>
+<div class="container mt-4">
+    <h2>Gestión de Mantenciones</h2>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
         {% endfor %}
-    </tbody>
-</table>
+    {% endif %}
+
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary">
+                <div class="card-body text-center">
+                    <h4 class="card-title">{{ total_mantenciones }}</h4>
+                    <p class="card-text">Total Mantenciones</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success">
+                <div class="card-body text-center">
+                    <h4 class="card-title">{{ mantenciones_preventivas }}</h4>
+                    <p class="card-text">Preventivas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-info">
+                <div class="card-body text-center">
+                    <h4 class="card-title">{{ mantenciones_mes }}</h4>
+                    <p class="card-text">Este Mes</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón agregar -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <a href="{% url 'admin_agregar_mantencion' %}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Agregar Mantención
+            </a>
+        </div>
+        <div class="text-muted">
+            <small>Mostrando {{ mantenciones.count }} mantención(es)</small>
+        </div>
+    </div>
+
+    <!-- Tabla de mantenciones -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="fas fa-tools"></i> Lista de Mantenciones</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Vehículo</th>
+                            <th>Mecánico</th>
+                            <th>Tipo</th>
+                            <th>Fecha</th>
+                            <th>Lugar</th>
+                            <th>Descripción</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mantencion in mantenciones %}
+                        <tr>
+                            <td>
+                                <strong class="text-primary">#{{ mantencion.ID_Mantencion }}</strong>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ mantencion.vehiculo.patente }}</span><br>
+                                <small>{{ mantencion.vehiculo.marca }} {{ mantencion.vehiculo.modelo }}</small>
+                            </td>
+                            <td>
+                                <strong>{{ mantencion.mecanico.Nombre }}</strong><br>
+                                <small class="text-muted">{{ mantencion.mecanico.RUT_Mecanico }}</small>
+                            </td>
+                            <td>
+                                <span class="badge 
+                                    {% if mantencion.Tipo_Mantencion == 'Preventiva' %}bg-success
+                                    {% elif mantencion.Tipo_Mantencion == 'Correctiva' %}bg-warning text-dark
+                                    {% elif mantencion.Tipo_Mantencion == 'Predictiva' %}bg-info
+                                    {% else %}bg-primary{% endif %}">
+                                    {{ mantencion.Tipo_Mantencion }}
+                                </span>
+                            </td>
+                            <td>
+                                <strong>{{ mantencion.Fecha|date:"d/m/Y" }}</strong>
+                            </td>
+                            <td>{{ mantencion.Lugar }}</td>
+                            <td>
+                                <small>{{ mantencion.Descripcion|truncatechars:30 }}</small>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{% url 'admin_editar_mantencion' mantencion.ID_Mantencion %}" class="btn btn-warning text-white" title="Editar">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </a>
+                                    <a href="{% url 'admin_eliminar_mantencion' mantencion.ID_Mantencion %}" class="btn btn-danger text-white" title="Eliminar">
+                                        <i class="fas fa-trash"></i> Eliminar
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-4">
+                                <div class="text-muted">
+                                    <i class="fas fa-tools fa-2x mb-2"></i>
+                                    <p>No hay mantenciones registradas</p>
+                                    <a href="{% url 'admin_agregar_mantencion' %}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-plus"></i> Agregar primera mantención
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.btn-group-sm > .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    margin: 0 2px;
+    white-space: nowrap;
+}
+</style>
 {% endblock %}

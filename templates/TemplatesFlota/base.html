@@ -2,205 +2,442 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Sistema de Gestión de Flota{% endblock %}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}ControlFlota{% endblock %}</title>
+    
+    <!-- CoreUI CSS desde CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/@coreui/coreui@4.3.0/dist/css/coreui.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@coreui/icons/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --info-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --sidebar-bg: #1a1d29;
+            --header-bg: #ffffff;
+            --card-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --hover-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            --sidebar-width: 280px;
+            --sidebar-collapsed-width: 0px;
+        }
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
+            background: #f8fafc;
+            color: #2d3748;
+            overflow-x: hidden;
+        }
+
+        /* Layout Principal */
+        .app-container {
             display: flex;
-            flex-direction: column;
             min-height: 100vh;
         }
-        .header {
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+
+        /* Sidebar que empuja contenido */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            transition: all 0.3s ease;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            z-index: 1000;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+            overflow-y: auto;
         }
-        .header a {
-            color: white;
-            text-decoration: none;
-            margin-left: 15px;
+
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+            width: var(--sidebar-collapsed-width);
         }
-        .content {
-            padding: 20px;
+
+        /* Contenido principal que se ajusta */
+        .main-content {
             flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: all 0.3s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        .menu {
-            background-color: #eee;
-            padding: 10px;
-            margin-bottom: 20px;
+
+        .main-content.expanded {
+            margin-left: var(--sidebar-width);
         }
-        .menu a {
-            margin-right: 15px;
-            text-decoration: none;
-            color: #333;
+
+        .main-content.collapsed {
+            margin-left: var(--sidebar-collapsed-width);
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+
+        /* Header dentro del contenido principal */
+        .main-header {
+            background: var(--header-bg);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            backdrop-filter: blur(10px);
         }
-        table, th, td {
-            border: 1px solid #ddd;
+
+        /* Sidebar Brand */
+        .sidebar-brand {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1.5rem 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
         }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        form {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"], input[type="password"], input[type="number"], 
-        input[type="date"], select, textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        input[type="submit"] {
-            background-color: #4CAF50;
+
+        .sidebar-brand-full {
+            font-weight: 700;
+            font-size: 1.4rem;
             color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            letter-spacing: -0.5px;
         }
-        input[type="submit"]:hover {
-            background-color: #45a049;
+
+        /* Navegación del Sidebar */
+        .sidebar-nav {
+            padding: 0 0.5rem;
         }
-        .messages {
-            list-style: none;
-            padding: 0;
-        }
-        .messages li {
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-        }
-        .success {
-            background-color: #dff0d8;
-            color: #3c763d;
-        }
-        .error {
-            background-color: #f2dede;
-            color: #a94442;
-        }
-        /* Nuevos estilos para imágenes y perfil */
-        .profile-container {
+
+        .nav-link {
+            border-radius: 12px;
+            margin: 0.25rem 0;
+            padding: 0.75rem 1rem;
+            color: #a0aec0;
+            transition: all 0.3s ease;
+            font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 10px;
+            text-decoration: none;
         }
-        .profile-img {
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-icon {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Botón de toggle */
+        .sidebar-toggler {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 0.5rem 0.75rem;
+            color: white;
+            transition: all 0.3s ease;
+            margin-right: 1rem;
+        }
+
+        .sidebar-toggler:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Cards Modernas */
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .stat-card {
+            border: none;
+            border-radius: 20px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: inherit;
+            opacity: 0.9;
+        }
+
+        .stat-card .card-body {
+            position: relative;
+            z-index: 2;
+        }
+
+        .stat-card-primary { background: var(--primary-gradient); }
+        .stat-card-success { background: var(--success-gradient); }
+        .stat-card-warning { background: var(--warning-gradient); }
+        .stat-card-info { background: var(--info-gradient); }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.mobile-visible {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0 !important;
+            }
+            
+            .overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.5);
+                z-index: 999;
+            }
+            
+            .overlay.visible {
+                display: block;
+            }
+        }
+
+        /* Avatar de usuario */
+        .user-avatar {
+            background: var(--primary-gradient);
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #fff;
-        }
-        .profile-header {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #e9ecef;
-            border-radius: 5px;
-        }
-        .profile-header img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #ddd;
-        }
-        table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        footer {
-            background-color: #333;
+            justify-content: center;
             color: white;
-            text-align: center;
-            padding: 15px;
-            margin-top: auto;
+            font-weight: 600;
+            font-size: 1.1rem;
         }
-        footer p {
-            margin: 0;
+
+        /* Animaciones */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        /* Estilos para el menú de navegación */
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-        }
-        .main-nav {
-            display: flex;
-            gap: 20px;
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Sistema de Gestión de Flota</h1>
-        <div class="profile-container">
-            {% if request.session.usuario_autenticado %}
-                <!-- Imagen de perfil - puedes cambiar la ruta según necesites -->
-                <img src="{% static 'images/user-profile.png' %}" alt="Perfil" class="profile-img">
-                <div>
-                    Bienvenido, {{ request.session.nombre_usuario }} | 
-                    <a href="{% url 'logout' %}">Cerrar Sesión</a>
+    <div class="app-container">
+        <!-- Overlay para móvil -->
+        <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+        
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="sidebar-brand-full">
+                    🚛 ControlFlota
                 </div>
-            {% else %}
-                <a href="{% url 'login' %}">Iniciar Sesión</a>
-            {% endif %}
+            </div>
+            {% include 'TemplatesFlota/partials/sidebar.html' %}  <!-- ✅ CORREGIDO -->
+        </div>
+        
+        <!-- Contenido Principal -->
+        <div class="main-content expanded" id="mainContent">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="container-fluid py-2">
+                    <div class="d-flex align-items-center">
+                        <button class="sidebar-toggler" type="button" onclick="toggleSidebar()">
+                            <i class="cil-menu"></i>
+                        </button>
+                        
+                        <div class="ms-auto">
+                            <div class="dropdown">
+                                <a class="btn btn-link text-dark text-decoration-none dropdown-toggle d-flex align-items-center" 
+                                   href="#" role="button" data-coreui-toggle="dropdown">
+                                    <div class="user-avatar me-2">
+                                        {{ nombre_usuario|first|upper }}
+                                    </div>
+                                    <span class="d-none d-md-inline">{{ nombre_usuario }}</span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" style="border-radius: 12px; border: none; box-shadow: var(--card-shadow);">
+                                    <a class="dropdown-item" href="#">
+                                        <i class="cil-user me-2"></i> Mi Perfil
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                        <i class="cil-settings me-2"></i> Configuración
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item text-danger" href="{% url 'logout' %}">
+                                        <i class="cil-account-logout me-2"></i> Cerrar Sesión
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Contenido -->
+            <main class="flex-grow-1 p-3">
+                <div class="container-fluid">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </main>
+            
+            <!-- Footer -->
+            <footer class="bg-white border-top py-3 mt-auto">
+                <div class="container-fluid">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted">&copy; 2025 ControlFlota - Sistema de Gestión de Flota</span>
+                        <span class="text-muted">v1.0.0</span>
+                    </div>
+                </div>
+            </footer>
         </div>
     </div>
 
-    {% if request.session.usuario_autenticado %}
-    <div class="menu">
-        {% block menu %}{% endblock %}
-    </div>
-    {% endif %}
+    <!-- jQuery y CoreUI JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/@coreui/coreui@4.3.0/dist/js/coreui.bundle.min.js"></script>
+    
+    <script>
+        let sidebarVisible = true;
 
-    <div class="content">
-        {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-            <li class="{{ message.tags }}">{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const overlay = document.getElementById('overlay');
+            
+            if (window.innerWidth < 992) {
+                // Comportamiento móvil
+                sidebar.classList.toggle('mobile-visible');
+                overlay.classList.toggle('visible');
+            } else {
+                // Comportamiento desktop
+                sidebarVisible = !sidebarVisible;
+                
+                if (sidebarVisible) {
+                    sidebar.classList.remove('collapsed');
+                    mainContent.classList.remove('collapsed');
+                    mainContent.classList.add('expanded');
+                } else {
+                    sidebar.classList.add('collapsed');
+                    mainContent.classList.remove('expanded');
+                    mainContent.classList.add('collapsed');
+                }
+            }
+        }
 
-        {% block content %}{% endblock %}
-    </div>
+        // Cerrar sidebar en móvil al hacer clic en un enlace
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth < 992) {
+                        const sidebar = document.getElementById('sidebar');
+                        const overlay = document.getElementById('overlay');
+                        sidebar.classList.remove('mobile-visible');
+                        overlay.classList.remove('visible');
+                    }
+                });
+            });
 
-    <footer>
-        <p>&copy; 2024 Sistema de Gestión de Flota. Todos los derechos reservados.</p>
-    </footer>
+            // Animaciones al cargar
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.classList.add('fade-in-up');
+            });
+
+            // Inicializar tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-coreui-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new coreui.Tooltip(tooltipTriggerEl);
+            });
+        });
+
+        // Manejar resize de ventana
+        function handleResize() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const overlay = document.getElementById('overlay');
+            
+            if (window.innerWidth >= 992) {
+                // Desktop - restaurar estado normal
+                overlay.classList.remove('visible');
+                if (sidebarVisible) {
+                    sidebar.classList.remove('collapsed', 'mobile-visible');
+                    mainContent.classList.remove('collapsed');
+                    mainContent.classList.add('expanded');
+                } else {
+                    sidebar.classList.add('collapsed');
+                    sidebar.classList.remove('mobile-visible');
+                    mainContent.classList.remove('expanded');
+                    mainContent.classList.add('collapsed');
+                }
+            } else {
+                // Móvil - sidebar oculto por defecto
+                sidebar.classList.remove('collapsed', 'mobile-visible');
+                mainContent.classList.remove('collapsed', 'expanded');
+                overlay.classList.remove('visible');
+            }
+        }
+
+        window.addEventListener('resize', handleResize);
+        handleResize(); // Ejecutar al cargar
+    </script>
+    
+    {% block extra_js %}
+    {% endblock %}
 </body>
 </html>

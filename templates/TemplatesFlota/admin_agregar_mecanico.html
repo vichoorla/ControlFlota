@@ -1,73 +1,224 @@
 {% extends 'TemplatesFlota/base.html' %}
 
-{% block title %}Agregar Mecánico{% endblock %}
-
-{% block menu %}
-    <a href="{% url 'admin_dashboard' %}">Volver al Panel</a>
-{% endblock %}
-
 {% block content %}
-<h2>Agregar Mecánico</h2>
-<form method="post">
-    {% csrf_token %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-plus"></i> Agregar Nuevo Mecánico
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
 
-    <h3>Datos de Usuario (Para Iniciar Sesión)</h3>
-    <div class="form-group">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-    </div>
-    <div class="form-group">
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-    </div>
-    <div class="form-group">
-        <label for="email_usuario">Email (Usuario):</label>
-        <input type="email" id="email_usuario" name="email_usuario" required>
-    </div>
+                    <form method="post" id="mecanicoForm">
+                        {% csrf_token %}
+                        
+                        <!-- Sección 1: Datos de Cuenta -->
+                        <div class="mb-4">
+                            <h5 class="text-primary border-bottom pb-2">
+                                <i class="fas fa-user-circle"></i> Datos de Cuenta
+                            </h5>
+                            
+                            <!-- Username -->
+                            <div class="mb-3">
+                                <label for="username" class="form-label fw-bold">Username *</label>
+                                <input type="text" class="form-control" id="username" name="username" 
+                                       placeholder="Ej: Juan.perez" required>
+                                <small class="form-text text-muted">Nombre de usuario para el sistema</small>
+                            </div>
 
-    <hr>
+                            <!-- Contraseña -->
+                            <div class="mb-3">
+                                <label for="password" class="form-label fw-bold">Contraseña *</label>
+                                <input type="password" class="form-control" id="password" name="password" 
+                                       minlength="8" required>
+                                <small class="form-text text-muted">Mínimo 8 caracteres</small>
+                                <div class="form-text text-danger" id="passwordError" style="display: none;">
+                                    La contraseña debe tener al menos 8 caracteres
+                                </div>
+                            </div>
 
-    <h3>Datos del Perfil Mecánico</h3>
-    <div class="form-group">
-        <label for="RUT_Mecanico">RUT Mecánico:</label>
-        <input type="text" id="RUT_Mecanico" name="RUT_Mecanico" required>
-    </div>
-    
-    <div class="form-group">
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" required>
-    </div>
-    
-    <div class="form-group">
-        <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
-        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
-    </div>
-    
-    <div class="form-group">
-        <label for="telefono">Teléfono:</label>
-        <input type="text" id="telefono" name="telefono" required>
-    </div>
-    
-    <div class="form-group">
-        <label for="estado">Estado:</label>
-        <select id="estado" name="estado" required>
-            <option value="Activo">Activo</option>
-            <option value="Inactivo">Inactivo</option>
-            <option value="Vacaciones">Vacaciones</option>
-            <option value="Licencia">Licencia</option>
-        </select>
-    </div>
+                            <!-- Email -->
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" 
+                                       placeholder="ejemplo@correo.com">
+                            </div>
 
-    <div class="form-group">
-        <label for="taller">Taller:</label>
-        <input type="text" id="taller" name="taller" required>
+                            <!-- Nombre Completo -->
+                            <div class="mb-3">
+                                <label for="Nombre" class="form-label fw-bold">Nombre Completo *</label>
+                                <input type="text" class="form-control" id="Nombre" name="Nombre" 
+                                       placeholder="Ej: Juan Pérez González" required>
+                                <small class="form-text text-muted">Solo letras y espacios</small>
+                            </div>
+                        </div>
+
+                        <!-- Línea divisoria -->
+                        <hr class="my-4">
+
+                        <!-- Sección 2: Datos Personales -->
+                        <div class="mb-4">
+                            <h5 class="text-primary border-bottom pb-2">
+                                <i class="fas fa-id-card"></i> Datos Personales
+                            </h5>
+                            
+                            <!-- RUT -->
+                            <div class="mb-3">
+                                <label for="RUT_Mecanico" class="form-label fw-bold">RUT *</label>
+                                <input type="text" class="form-control" id="RUT_Mecanico" name="RUT_Mecanico" 
+                                       placeholder="Ej: 12.345.678-9 o 12345678-9" required>
+                                <small class="form-text text-muted">Formato: 12.345.678-9 o 12345678-9</small>
+                            </div>
+
+                            <!-- Fecha Nacimiento -->
+                            <div class="mb-3">
+                                <label for="Fecha_Nacimiento" class="form-label fw-bold">Fecha de Nacimiento *</label>
+                                <input type="date" class="form-control" id="Fecha_Nacimiento" name="Fecha_Nacimiento" 
+                                       max="{{ max_date|date:'Y-m-d' }}" 
+                                       min="{{ min_date|date:'Y-m-d' }}" required>
+                                <small class="form-text text-muted">Debe tener entre 18 y 80 años</small>
+                            </div>
+
+                            <!-- Teléfono -->
+                            <div class="mb-3">
+                                <label for="Telefono" class="form-label fw-bold">Teléfono *</label>
+                                <input type="text" class="form-control" id="Telefono" name="Telefono" 
+                                       placeholder="Ej: 912345678 o +56 9 1234 5678" required>
+                                <small class="form-text text-muted">Formato: 912345678 o +56 9 1234 5678</small>
+                            </div>
+
+                            <!-- Estado -->
+                            <div class="mb-3">
+                                <label for="Estado" class="form-label fw-bold">Estado *</label>
+                                <select class="form-select" id="Estado" name="Estado" required>
+                                    <option value="">Seleccione estado</option>
+                                    {% for estado in estados %}
+                                        <option value="{{ estado }}">{{ estado }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Taller -->
+                            <div class="mb-3">
+                                <label for="Taller" class="form-label fw-bold">Taller *</label>
+                                <input type="text" class="form-control" id="Taller" name="Taller" 
+                                       placeholder="Ej: Taller Central" required>
+                            </div>
+
+                            <!-- Horas -->
+                            <div class="mb-3">
+                                <label for="Horas" class="form-label fw-bold">Horas Trabajadas *</label>
+                                <input type="number" class="form-control" id="Horas" name="Horas" 
+                                       value="0" min="0" max="999" placeholder="Ej: 160" required>
+                                <small class="form-text text-muted">Número entre 0 y 999</small>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{% url 'admin_ver_mecanicos' %}" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left"></i> Cancelar
+                                    </a>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-save"></i> Guardar Mecánico
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-    
-    <div class="form-group">
-        <label for="horas">Horas:</label>
-        <input type="number" id="horas" name="horas" required>
-    </div>
-    
-    <input type="submit" value="Agregar Mecánico">
-</form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('mecanicoForm');
+    const passwordInput = document.getElementById('password');
+    const passwordError = document.getElementById('passwordError');
+    const rutInput = document.getElementById('RUT_Mecanico');
+    const telefonoInput = document.getElementById('Telefono');
+
+    // Validar contraseña en tiempo real
+    passwordInput.addEventListener('input', function() {
+        if (this.value.length < 8) {
+            passwordError.style.display = 'block';
+            this.classList.add('is-invalid');
+        } else {
+            passwordError.style.display = 'none';
+            this.classList.remove('is-invalid');
+        }
+    });
+
+    // Formatear RUT automáticamente
+    rutInput.addEventListener('input', function(e) {
+        let rut = this.value.replace(/\./g, '').replace('-', '').toUpperCase();
+        
+        if (rut.length > 1) {
+            let cuerpo = rut.slice(0, -1);
+            let dv = rut.slice(-1);
+            
+            // Agregar puntos cada 3 dígitos
+            cuerpo = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            
+            this.value = cuerpo + '-' + dv;
+        }
+    });
+
+    // Validar teléfono en tiempo real
+    telefonoInput.addEventListener('input', function() {
+        const telefono = this.value;
+        const pattern = /^\+56 9 \d{4} \d{4}$|^9\d{8}$|^\d{9}$/;
+        
+        if (telefono && !pattern.test(telefono)) {
+            this.classList.add('is-invalid');
+        } else {
+            this.classList.remove('is-invalid');
+        }
+    });
+
+    // Validar formulario antes de enviar
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+
+        // Validar contraseña
+        if (passwordInput.value.length < 8) {
+            passwordError.style.display = 'block';
+            passwordInput.classList.add('is-invalid');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            alert('❌ Por favor complete todos los campos requeridos correctamente');
+        }
+    });
+});
+</script>
+
+<style>
+.form-label {
+    margin-bottom: 0.5rem;
+}
+.form-text {
+    font-size: 0.875rem;
+}
+.border-bottom {
+    border-color: #0d6efd !important;
+}
+</style>
 {% endblock %}

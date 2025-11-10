@@ -1,39 +1,142 @@
 {% extends 'TemplatesFlota/base.html' %}
 
-{% block title %}Ver Combustible{% endblock %}
-
-{% block menu %}
-    <a href="{% url 'admin_dashboard' %}">Volver al Panel</a>
-{% endblock %}
-
 {% block content %}
-<h2>Registros de Combustible</h2>
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Vehículo</th> <th>Tipo Combustible</th>
-            <th>Fecha Recarga</th>
-            <th>Lugar</th>
-            <th>Cantidad Estanque</th>
-            <th>Recargar</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for combustible in combustibles %}
-        <tr>
-            <td>{{ combustible.id }}</td>
-            <td>{{ combustible.vehiculo.patente }}</td> <td>{{ combustible.Tipo_Combustible }}</td>
-            <td>{{ combustible.Fecha_Recarga }}</td>
-            <td>{{ combustible.Lugar }}</td>
-            <td>{{ combustible.Cantidad_Estanque }} Lts</td>
-            <td>{{ combustible.Recargar }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="7">No hay registros de combustible.</td>
-        </tr>
+<div class="container mt-4">
+    <h2>Registros de Combustible</h2>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
         {% endfor %}
-    </tbody>
-</table>
+    {% endif %}
+
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">{{ combustibles.count }}</h5>
+                    <p class="card-text">Total Recargas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">{{ total_litros|floatformat:0 }}</h5>
+                    <p class="card-text">Litros Totales</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">{{ recargas_mes }}</h5>
+                    <p class="card-text">Recargas Este Mes</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title">{{ vehiculos_activos }}</h5>
+                    <p class="card-text">Vehículos Activos</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="vehiculo" class="form-label">Filtrar por Vehículo</label>
+                    <select name="vehiculo" id="vehiculo" class="form-select">
+                        <option value="">Todos los vehículos</option>
+                        {% for vehiculo in todos_vehiculos %}
+                        <option value="{{ vehiculo.patente }}">{{ vehiculo.patente }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="mes" class="form-label">Filtrar por Mes</label>
+                    <select name="mes" id="mes" class="form-select">
+                        <option value="">Todos los meses</option>
+                        {% for i in "123456789101112" %}
+                        <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">Filtrar</button>
+                    <a href="{% url 'admin_ver_combustible' %}" class="btn btn-secondary">Limpiar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de combustible -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Vehículo</th>
+                            <th>Tipo Combustible</th>
+                            <th>Lugar</th>
+                            <th>Cantidad (L)</th>
+                            <th>Recarga Completa</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for combustible in combustibles %}
+                        <tr>
+                            <td>{{ combustible.Fecha_Recarga|date:"d/m/Y" }}</td>
+                            <td>
+                                <strong>{{ combustible.vehiculo.patente }}</strong><br>
+                                <small class="text-muted">{{ combustible.vehiculo.marca }} {{ combustible.vehiculo.modelo }}</small>
+                            </td>
+                            <td>
+                                <span class="badge 
+                                    {% if combustible.Tipo_Combustible == 'Diésel' %}bg-dark
+                                    {% elif combustible.Tipo_Combustible == '95' %}bg-danger
+                                    {% elif combustible.Tipo_Combustible == '97' %}bg-warning
+                                    {% else %}bg-info{% endif %}">
+                                    {{ combustible.Tipo_Combustible }}
+                                </span>
+                            </td>
+                            <td>{{ combustible.Lugar }}</td>
+                            <td><strong>{{ combustible.Cantidad_Estanque }}</strong> L</td>
+                            <td>
+                                <span class="badge {% if combustible.Recargar == 'Si' %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {{ combustible.Recargar }}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-info" title="Detalles">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">No hay registros de combustible</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,0 +1,162 @@
+{% extends 'TemplatesFlota/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">
+                        <i class="fas fa-edit"></i> Editar Mecánico: {{ mecanico.Nombre }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" id="mecanicoForm">
+                        {% csrf_token %}
+                        
+                        <!-- Sección: Datos Personales -->
+                        <div class="mb-4">
+                            <h5 class="text-primary border-bottom pb-2">
+                                <i class="fas fa-id-card"></i> Datos Personales
+                            </h5>
+                            
+                            <!-- RUT (solo lectura) -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">RUT</label>
+                                <input type="text" class="form-control" value="{{ mecanico.RUT_Mecanico }}" readonly>
+                                <small class="form-text text-muted">El RUT no se puede modificar</small>
+                            </div>
+
+                            <!-- Nombre Completo -->
+                            <div class="mb-3">
+                                <label for="Nombre" class="form-label fw-bold">Nombre Completo *</label>
+                                <input type="text" class="form-control" id="Nombre" name="Nombre" 
+                                       value="{{ mecanico.Nombre }}" placeholder="Ej: Juan Pérez González" required>
+                                <small class="form-text text-muted">Solo letras y espacios</small>
+                            </div>
+
+                            <!-- Fecha Nacimiento -->
+                            <div class="mb-3">
+                                <label for="Fecha_Nacimiento" class="form-label fw-bold">Fecha de Nacimiento *</label>
+                                <input type="date" class="form-control" id="Fecha_Nacimiento" name="Fecha_Nacimiento" 
+                                       value="{{ mecanico.Fecha_Nacimiento|date:'Y-m-d' }}"
+                                       max="{{ max_date|date:'Y-m-d' }}" 
+                                       min="{{ min_date|date:'Y-m-d' }}" required>
+                                <small class="form-text text-muted">Debe tener entre 18 y 80 años</small>
+                            </div>
+
+                            <!-- Teléfono -->
+                            <div class="mb-3">
+                                <label for="Telefono" class="form-label fw-bold">Teléfono *</label>
+                                <input type="text" class="form-control" id="Telefono" name="Telefono" 
+                                       value="{{ mecanico.Telefono }}" placeholder="Ej: 912345678 o +56 9 1234 5678" required>
+                                <small class="form-text text-muted">Formato: 912345678 o +56 9 1234 5678</small>
+                            </div>
+
+                            <!-- Estado -->
+                            <div class="mb-3">
+                                <label for="Estado" class="form-label fw-bold">Estado *</label>
+                                <select class="form-select" id="Estado" name="Estado" required>
+                                    <option value="">Seleccione estado</option>
+                                    {% for estado in estados %}
+                                        <option value="{{ estado }}" 
+                                                {% if mecanico.Estado == estado %}selected{% endif %}>
+                                            {{ estado }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Taller -->
+                            <div class="mb-3">
+                                <label for="Taller" class="form-label fw-bold">Taller *</label>
+                                <input type="text" class="form-control" id="Taller" name="Taller" 
+                                       value="{{ mecanico.Taller }}" placeholder="Ej: Taller Central" required>
+                            </div>
+
+                            <!-- Horas -->
+                            <div class="mb-3">
+                                <label for="Horas" class="form-label fw-bold">Horas Trabajadas *</label>
+                                <input type="number" class="form-control" id="Horas" name="Horas" 
+                                       value="{{ mecanico.Horas }}" min="0" max="999" placeholder="Ej: 160" required>
+                                <small class="form-text text-muted">Número entre 0 y 999</small>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{% url 'admin_ver_mecanicos' %}" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left"></i> Volver a la lista
+                                    </a>
+                                    <div>
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-save"></i> Guardar Cambios
+                                        </button>
+                                        <a href="{% url 'admin_eliminar_mecanico' mecanico.RUT_Mecanico %}" class="btn btn-danger">
+                                            <i class="fas fa-trash"></i> Eliminar Mecánico
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const telefonoInput = document.getElementById('Telefono');
+    const form = document.getElementById('mecanicoForm');
+
+    // Validar teléfono en tiempo real
+    telefonoInput.addEventListener('input', function() {
+        const telefono = this.value;
+        const pattern = /^\+56 9 \d{4} \d{4}$|^9\d{8}$|^\d{9}$/;
+        
+        if (telefono && !pattern.test(telefono)) {
+            this.classList.add('is-invalid');
+        } else {
+            this.classList.remove('is-invalid');
+        }
+    });
+
+    // Validar formulario antes de enviar
+    form.addEventListener('submit', function(e) {
+        const telefono = telefonoInput.value;
+        const pattern = /^\+56 9 \d{4} \d{4}$|^9\d{8}$|^\d{9}$/;
+        
+        if (telefono && !pattern.test(telefono)) {
+            e.preventDefault();
+            alert('❌ Por favor ingrese un formato de teléfono válido');
+            telefonoInput.focus();
+        }
+    });
+});
+</script>
+
+<style>
+.form-label {
+    margin-bottom: 0.5rem;
+}
+.form-text {
+    font-size: 0.875rem;
+}
+.border-bottom {
+    border-color: #0d6efd !important;
+}
+</style>
+{% endblock %}

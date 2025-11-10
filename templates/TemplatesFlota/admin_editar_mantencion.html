@@ -1,0 +1,153 @@
+{% extends 'TemplatesFlota/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">
+                        <i class="fas fa-edit"></i> Editar Mantención #{{ mantencion.ID_Mantencion }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" id="mantencionForm">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <!-- Vehículo -->
+                                <div class="mb-3">
+                                    <label for="vehiculo" class="form-label fw-bold">Vehículo *</label>
+                                    <select class="form-select" id="vehiculo" name="vehiculo" required>
+                                        <option value="">Seleccione un vehículo</option>
+                                        {% for vehiculo in vehiculos %}
+                                            <option value="{{ vehiculo.patente }}" 
+                                                    {% if mantencion.vehiculo.patente == vehiculo.patente %}selected{% endif %}>
+                                                {{ vehiculo.patente }} - {{ vehiculo.marca }} {{ vehiculo.modelo }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <!-- Mecánico -->
+                                <div class="mb-3">
+                                    <label for="mecanico" class="form-label fw-bold">Mecánico *</label>
+                                    <select class="form-select" id="mecanico" name="mecanico" required>
+                                        <option value="">Seleccione un mecánico</option>
+                                        {% for mecanico in mecanicos %}
+                                            <option value="{{ mecanico.RUT_Mecanico }}" 
+                                                    {% if mantencion.mecanico.RUT_Mecanico == mecanico.RUT_Mecanico %}selected{% endif %}>
+                                                {{ mecanico.Nombre }} - {{ mecanico.RUT_Mecanico }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <!-- Tipo de Mantención -->
+                                <div class="mb-3">
+                                    <label for="Tipo_Mantencion" class="form-label fw-bold">Tipo de Mantención *</label>
+                                    <select class="form-select" id="Tipo_Mantencion" name="Tipo_Mantencion" required>
+                                        <option value="">Seleccione tipo</option>
+                                        {% for tipo in tipos_mantencion %}
+                                            <option value="{{ tipo }}" 
+                                                    {% if mantencion.Tipo_Mantencion == tipo %}selected{% endif %}>
+                                                {{ tipo }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <!-- Fecha -->
+                                <div class="mb-3">
+                                    <label for="Fecha" class="form-label fw-bold">Fecha *</label>
+                                    <input type="date" class="form-control" id="Fecha" name="Fecha" 
+                                           value="{{ mantencion.Fecha|date:'Y-m-d' }}" required>
+                                </div>
+
+                                <!-- Lugar -->
+                                <div class="mb-3">
+                                    <label for="Lugar" class="form-label">Lugar</label>
+                                    <input type="text" class="form-control" id="Lugar" name="Lugar" 
+                                           value="{{ mantencion.Lugar }}" placeholder="Ej: Taller Central">
+                                </div>
+
+                                <!-- Descripción -->
+                                <div class="mb-3">
+                                    <label for="Descripcion" class="form-label fw-bold">Descripción *</label>
+                                    <textarea class="form-control" id="Descripcion" name="Descripcion" 
+                                              rows="3" required>{{ mantencion.Descripcion }}</textarea>
+                                    <small class="form-text text-muted">Mínimo 10 caracteres</small>
+                                    <div class="form-text text-danger" id="descripcionError" style="display: none;">
+                                        La descripción debe tener al menos 10 caracteres
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{% url 'admin_ver_mantenciones' %}" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left"></i> Volver a la lista
+                                    </a>
+                                    <div>
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-save"></i> Guardar Cambios
+                                        </button>
+                                        <a href="{% url 'admin_eliminar_mantencion' mantencion.ID_Mantencion %}" class="btn btn-danger">
+                                            <i class="fas fa-trash"></i> Eliminar Mantención
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('mantencionForm');
+    const descripcionInput = document.getElementById('Descripcion');
+    const descripcionError = document.getElementById('descripcionError');
+
+    // Validar descripción en tiempo real
+    descripcionInput.addEventListener('input', function() {
+        if (this.value.length < 10) {
+            descripcionError.style.display = 'block';
+            this.classList.add('is-invalid');
+        } else {
+            descripcionError.style.display = 'none';
+            this.classList.remove('is-invalid');
+        }
+    });
+
+    // Validar formulario antes de enviar
+    form.addEventListener('submit', function(e) {
+        if (descripcionInput.value.length < 10) {
+            e.preventDefault();
+            descripcionError.style.display = 'block';
+            descripcionInput.classList.add('is-invalid');
+            alert('❌ La descripción debe tener al menos 10 caracteres');
+            descripcionInput.focus();
+        }
+    });
+});
+</script>
+{% endblock %}

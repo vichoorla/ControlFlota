@@ -1,0 +1,44 @@
+/* Sidebar fijo */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 256px;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+}
+
+/* Contenido principal */
+.main-content {
+    min-height: 100vh;
+    transition: margin-left 0.3s ease;
+}
+
+/* Header fijo */
+.c-header {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+/* Asegurar que el contenido no se solape */
+.c-body {
+    padding-top: 20px;
+}
+
+/* En móviles, el sidebar se superpone */
+@media (max-width: 992px) {
+    .sidebar {
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+    
+    .sidebar-hidden {
+        transform: translateX(-100%);
+    }
+    
+    .sidebar-visible {
+        transform: translateX(0);
+    }
+}

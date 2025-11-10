@@ -1,0 +1,252 @@
+{% extends 'TemplatesFlota/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">
+                        <i class="fas fa-edit"></i> Editar Vehículo: {{ vehiculo.patente }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Debug Info -->
+                    <div class="alert alert-info">
+                        <strong>Información de Debug:</strong><br>
+                        Tipo Actual: {{ vehiculo.Tipo.nombre }} (PK: {{ vehiculo.Tipo.pk }})<br>
+                        Total de Tipos Disponibles: {{ tipos_vehiculo.count }}
+                    </div>
+
+                    {% if messages %}
+                        <div class="mb-3">
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <form method="post" id="vehiculoForm">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <!-- Columna Izquierda -->
+                            <div class="col-md-6">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fas fa-info-circle"></i> Información Básica
+                                </h5>
+                                
+                                <!-- Patente (solo lectura) -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Patente</label>
+                                    <input type="text" class="form-control" value="{{ vehiculo.patente }}" readonly>
+                                    <small class="form-text text-muted">La patente no se puede modificar</small>
+                                </div>
+
+                                <!-- VIN -->
+                                <div class="mb-3">
+                                    <label for="vin" class="form-label fw-bold">VIN *</label>
+                                    <input type="text" class="form-control" id="vin" name="vin" 
+                                           value="{{ vehiculo.VIN }}" maxlength="17" required>
+                                    <small class="form-text text-muted">17 caracteres alfanuméricos (sin I, O, Q)</small>
+                                </div>
+
+                                <!-- Marca y Modelo -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="marca" class="form-label fw-bold">Marca *</label>
+                                            <input type="text" class="form-control" id="marca" name="marca" 
+                                                   value="{{ vehiculo.marca }}" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="modelo" class="form-label fw-bold">Modelo *</label>
+                                            <input type="text" class="form-control" id="modelo" name="modelo" 
+                                                   value="{{ vehiculo.modelo }}" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Año y Motor -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="año" class="form-label fw-bold">Año *</label>
+                                            <input type="number" class="form-control" id="año" name="año" 
+                                                   value="{{ vehiculo.año }}" min="1900" max="{{ max_year }}" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="motor" class="form-label">Motor</label>
+                                            <input type="text" class="form-control" id="motor" name="motor" 
+                                                   value="{{ vehiculo.motor }}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tipo de Vehículo - CORREGIDO -->
+                                <div class="mb-3">
+                                    <label for="tipo" class="form-label fw-bold">Tipo de Vehículo *</label>
+                                    <select class="form-select" id="tipo" name="tipo" required>
+                                        <option value="">Seleccione un tipo</option>
+                                        {% for tipo in tipos_vehiculo %}
+                                            <option value="{{ tipo.pk }}" 
+                                                    {% if vehiculo.Tipo.pk == tipo.pk %}selected{% endif %}>
+                                                {{ tipo.nombre }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="form-text text-danger" id="tipoError" style="display: none;">
+                                        ❌ Debe seleccionar un tipo de vehículo
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Columna Derecha -->
+                            <div class="col-md-6">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fas fa-tachometer-alt"></i> Especificaciones Técnicas
+                                </h5>
+
+                                <!-- Kilometraje -->
+                                <div class="mb-3">
+                                    <label for="kilometraje" class="form-label">Kilometraje</label>
+                                    <input type="number" class="form-control" id="kilometraje" name="kilometraje" 
+                                           value="{{ vehiculo.kilometraje }}" min="0" max="1000000" step="1">
+                                </div>
+
+                                <!-- Estanque -->
+                                <div class="mb-3">
+                                    <label for="estanque" class="form-label fw-bold">Capacidad Estanque (L) *</label>
+                                    <input type="number" class="form-control" id="estanque" name="estanque" 
+                                           value="{{ vehiculo.estanque }}" min="1" max="500" step="0.1" required>
+                                </div>
+
+                                <!-- Tonelaje -->
+                                <div class="mb-3">
+                                    <label for="tonelaje" class="form-label">Tonelaje</label>
+                                    <input type="number" class="form-control" id="tonelaje" name="tonelaje" 
+                                           value="{{ vehiculo.tonelaje }}" min="0.1" max="100" step="0.1">
+                                    <small class="form-text text-muted">Solo para vehículos de carga</small>
+                                </div>
+
+                                <!-- Chofer Asignado -->
+                                <div class="mb-3">
+                                    <label for="chofer_asignado" class="form-label">Chofer Asignado</label>
+                                    <select class="form-select" id="chofer_asignado" name="chofer_asignado">
+                                        <option value="">Sin chofer asignado</option>
+                                        {% for chofer in choferes %}
+                                            <option value="{{ chofer.pk }}" 
+                                                    {% if vehiculo.chofer_asignado and vehiculo.chofer_asignado.pk == chofer.pk %}selected{% endif %}>
+                                                {{ chofer.Nombre }} - {{ chofer.RUT }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <!-- Documentación y Equipamiento -->
+                                <h5 class="text-primary mb-3 mt-4">
+                                    <i class="fas fa-file-alt"></i> Documentación y Equipamiento
+                                </h5>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="seguro" name="seguro" 
+                                                   {% if vehiculo.seguro %}checked{% endif %}>
+                                            <label class="form-check-label" for="seguro">Seguro al día</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="revision_tecnica" name="revision_tecnica"
+                                                   {% if vehiculo.revision_tecnica %}checked{% endif %}>
+                                            <label class="form-check-label" for="revision_tecnica">Revisión técnica</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="permiso_circulacion" name="permiso_circulacion"
+                                                   {% if vehiculo.permiso_circulacion %}checked{% endif %}>
+                                            <label class="form-check-label" for="permiso_circulacion">Permiso circulación</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="gps" name="gps"
+                                                   {% if vehiculo.gps %}checked{% endif %}>
+                                            <label class="form-check-label" for="gps">Sistema GPS</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{% url 'admin_ver_vehiculos' %}" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left"></i> Volver a la lista
+                                    </a>
+                                    <div>
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-save"></i> Guardar Cambios
+                                        </button>
+                                        <a href="{% url 'admin_eliminar_vehiculo' vehiculo.patente %}" class="btn btn-danger">
+                                            <i class="fas fa-trash"></i> Eliminar Vehículo
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script de validación mejorado -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tipoSelect = document.getElementById('tipo');
+    const tipoError = document.getElementById('tipoError');
+    const form = document.getElementById('vehiculoForm');
+    
+    console.log('Tipo seleccionado al cargar:', tipoSelect.value);
+    
+    // Validar antes de enviar
+    form.addEventListener('submit', function(e) {
+        const tipoValue = tipoSelect.value;
+        console.log('Validando tipo antes de enviar:', tipoValue);
+        
+        if (!tipoValue) {
+            e.preventDefault();
+            tipoError.style.display = 'block';
+            tipoSelect.classList.add('is-invalid');
+            tipoSelect.focus();
+            alert('❌ ERROR: Debe seleccionar un tipo de vehículo');
+        } else {
+            tipoError.style.display = 'none';
+            tipoSelect.classList.remove('is-invalid');
+        }
+    });
+    
+    // Validar VIN
+    const vinInput = document.getElementById('vin');
+    vinInput.addEventListener('input', function() {
+        const vin = this.value.toUpperCase();
+        const pattern = /^[A-HJ-NPR-Z0-9]{17}$/;
+        
+        if (vin && !pattern.test(vin)) {
+            this.classList.add('is-invalid');
+        } else {
+            this.classList.remove('is-invalid');
+        }
+    });
+});
+</script>
+{% endblock %}

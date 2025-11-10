@@ -1,0 +1,149 @@
+{% extends 'TemplatesFlota/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-car"></i> Detalles del Vehículo
+                </h2>
+                <a href="{% url 'chofer_ver_vehiculos' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">{{ vehiculo.patente }} - {{ vehiculo.marca }} {{ vehiculo.modelo }}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Información Básica -->
+                        <div class="col-md-6">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-info-circle"></i> Información Básica
+                            </h5>
+                            <table class="table table-sm">
+                                <tr>
+                                    <th width="40%">Patente:</th>
+                                    <td><strong>{{ vehiculo.patente }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>VIN:</th>
+                                    <td>{{ vehiculo.VIN }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Marca/Modelo:</th>
+                                    <td>{{ vehiculo.marca }} {{ vehiculo.modelo }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Año:</th>
+                                    <td>{{ vehiculo.año }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Motor:</th>
+                                    <td>{{ vehiculo.motor|default:"No especificado" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Tipo:</th>
+                                    <td><span class="badge bg-info">{{ vehiculo.Tipo.nombre }}</span></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Especificaciones Técnicas -->
+                        <div class="col-md-6">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-tachometer-alt"></i> Especificaciones
+                            </h5>
+                            <table class="table table-sm">
+                                <tr>
+                                    <th width="40%">Kilometraje:</th>
+                                    <td>{{ vehiculo.kilometraje }} km</td>
+                                </tr>
+                                <tr>
+                                    <th>Capacidad Estanque:</th>
+                                    <td>{{ vehiculo.estanque }} litros</td>
+                                </tr>
+                                <tr>
+                                    <th>Tonelaje:</th>
+                                    <td>{{ vehiculo.tonelaje|default:"No aplica" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Chofer Asignado:</th>
+                                    <td><strong>{{ vehiculo.chofer_asignado.Nombre }}</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Documentación y Estado -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-file-alt"></i> Estado y Documentación
+                            </h5>
+                            <div class="row">
+                                <div class="col-md-3 text-center mb-3">
+                                    <div class="card h-100 border-{% if vehiculo.seguro %}success{% else %}danger{% endif %}">
+                                        <div class="card-body">
+                                            <i class="fas fa-shield-alt fa-2x text-{% if vehiculo.seguro %}success{% else %}danger{% endif %} mb-2"></i>
+                                            <h6>Seguro</h6>
+                                            <span class="badge bg-{% if vehiculo.seguro %}success{% else %}danger{% endif %}">
+                                                {% if vehiculo.seguro %}AL DÍA{% else %}VENCIDO{% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-center mb-3">
+                                    <div class="card h-100 border-{% if vehiculo.revision_tecnica %}success{% else %}danger{% endif %}">
+                                        <div class="card-body">
+                                            <i class="fas fa-wrench fa-2x text-{% if vehiculo.revision_tecnica %}success{% else %}danger{% endif %} mb-2"></i>
+                                            <h6>Revisión Técnica</h6>
+                                            <span class="badge bg-{% if vehiculo.revision_tecnica %}success{% else %}danger{% endif %}">
+                                                {% if vehiculo.revision_tecnica %}VIGENTE{% else %}VENCIDA{% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-center mb-3">
+                                    <div class="card h-100 border-{% if vehiculo.permiso_circulacion %}success{% else %}danger{% endif %}">
+                                        <div class="card-body">
+                                            <i class="fas fa-file-contract fa-2x text-{% if vehiculo.permiso_circulacion %}success{% else %}danger{% endif %} mb-2"></i>
+                                            <h6>Permiso Circulación</h6>
+                                            <span class="badge bg-{% if vehiculo.permiso_circulacion %}success{% else %}danger{% endif %}">
+                                                {% if vehiculo.permiso_circulacion %}VIGENTE{% else %}VENCIDO{% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-center mb-3">
+                                    <div class="card h-100 border-{% if vehiculo.gps %}info{% else %}secondary{% endif %}">
+                                        <div class="card-body">
+                                            <i class="fas fa-satellite fa-2x text-{% if vehiculo.gps %}info{% else %}secondary{% endif %} mb-2"></i>
+                                            <h6>Sistema GPS</h6>
+                                            <span class="badge bg-{% if vehiculo.gps %}info{% else %}secondary{% endif %}">
+                                                {% if vehiculo.gps %}ACTIVO{% else %}INACTIVO{% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

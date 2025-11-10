@@ -1,0 +1,95 @@
+{% extends 'TemplatesFlota/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> Eliminar Mecánico
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <div class="alert alert-warning">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-exclamation-circle"></i> ¿Está seguro que desea eliminar este mecánico?
+                        </h5>
+                        <p class="mb-0">Esta acción no se puede deshacer.</p>
+                    </div>
+
+                    <!-- Información del Mecánico -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h6 class="card-title text-danger">Información del Mecánico</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>RUT:</strong><br>
+                                    {{ mecanico.RUT_Mecanico }}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Nombre:</strong><br>
+                                    {{ mecanico.Nombre }}
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    <strong>Taller:</strong><br>
+                                    {{ mecanico.Taller }}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Estado:</strong><br>
+                                    <span class="badge 
+                                        {% if mecanico.Estado == 'Activo' %}bg-success
+                                        {% elif mecanico.Estado == 'Vacaciones' %}bg-warning text-dark
+                                        {% elif mecanico.Estado == 'Licencia' %}bg-info
+                                        {% else %}bg-secondary{% endif %}">
+                                        {{ mecanico.Estado }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-12">
+                                    <strong>Horas Trabajadas:</strong><br>
+                                    {{ mecanico.Horas }} horas
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulario de eliminación -->
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'admin_ver_mecanicos' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('¿Está completamente seguro? Esta acción eliminará permanentemente al mecánico.')">
+                                <i class="fas fa-trash"></i> Confirmar Eliminación
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: 2px solid #dc3545;
+}
+.alert-warning {
+    border-left: 4px solid #ffc107;
+}
+</style>
+{% endblock %}

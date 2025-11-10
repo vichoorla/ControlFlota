@@ -1,49 +1,187 @@
 {% extends 'TemplatesFlota/base.html' %}
 
-{% block title %}Ver Vehículos{% endblock %}
-
-{% block menu %}
-    <a href="{% url 'admin_dashboard' %}">Volver al Panel</a>
-    <a href="{% url 'admin_agregar_vehiculo' %}">Agregar Vehículo</a>
-{% endblock %}
-
 {% block content %}
-<h2>Lista de Vehículos</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Patente</th>
-            <th>Tipo</th>
-            <th>Marca</th>
-            <th>Modelo</th>
-            <th>Año</th>
-            <th>Kilometraje</th>
-            <th>Chofer Asignado</th>
-            <th>Seguro</th>
-            <th>Revisión Técnica</th>
-            <th>Permiso Circulación</th>
-            <th>GPS</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for vehiculo in vehiculos %}
-        <tr>
-            <td>{{ vehiculo.patente }}</td>
-            <td>{{ vehiculo.Tipo.nombre }}</td>
-            <td>{{ vehiculo.marca }}</td>
-            <td>{{ vehiculo.modelo }}</td>
-            <td>{{ vehiculo.año }}</td>
-            <td>{{ vehiculo.kilometraje }} km</td>
-            <td>{{ vehiculo.chofer_asignado.Nombre|default:"Sin asignar" }}</td>
-            <td>{{ vehiculo.seguro|yesno:"Sí,No" }}</td>
-            <td>{{ vehiculo.revision_tecnica|yesno:"Sí,No" }}</td>
-            <td>{{ vehiculo.permiso_circulacion|yesno:"Sí,No" }}</td>
-            <td>{{ vehiculo.gps|yesno:"Sí,No" }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="11">No hay vehículos registrados.</td> </tr>
+<div class="container mt-4">
+    <h2>Gestión de Vehículos</h2>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
         {% endfor %}
-    </tbody>
-</table>
+    {% endif %}
+
+    <!-- Estadísticas MEJORADAS -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body text-center">
+                    <h4 class="card-title">{{ total_vehiculos }}</h4>
+                    <p class="card-text">Total Vehículos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body text-center">
+                    <h4 class="card-title">{{ vehiculos_con_chofer }}</h4>
+                    <p class="card-text">Con Chofer</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body text-center">
+                    <h4 class="card-title">{{ vehiculos_sin_chofer }}</h4>
+                    <p class="card-text">Sin Chofer</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body text-center">
+                    <h4 class="card-title">{{ vehiculos_activos }}</h4>
+                    <p class="card-text">Activos</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botones de acción MEJORADOS -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <a href="{% url 'admin_agregar_vehiculo' %}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Agregar Vehículo
+            </a>
+            <a href="{% url 'admin_ver_tipos_vehiculo' %}" class="btn btn-outline-info">
+                <i class="fas fa-cog"></i> Tipos de Vehículo
+            </a>
+        </div>
+        <div class="text-muted">
+            <small>Mostrando {{ vehiculos.count }} vehículo(s)</small>
+        </div>
+    </div>
+
+    <!-- Tabla de vehículos MEJORADA -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="fas fa-car"></i> Lista de Vehículos</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Patente</th>
+                            <th>Marca</th>
+                            <th>Modelo</th>
+                            <th>Año</th>
+                            <th>Estanque</th>
+                            <th>Tipo</th>
+                            <th>Chofer</th>
+                            <th>Estado</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vehiculo in vehiculos %}
+                        <tr>
+                            <td>
+                                <strong class="text-primary">{{ vehiculo.patente }}</strong>
+                            </td>
+                            <td>{{ vehiculo.marca }}</td>
+                            <td>{{ vehiculo.modelo }}</td>
+                            <td>
+                                <span class="badge bg-secondary">{{ vehiculo.año }}</span>
+                            </td>
+                            <td>
+                                {% if vehiculo.estanque %}
+                                    <span class="badge bg-primary">
+                                        <i class="fas fa-gas-pump"></i> {{ vehiculo.estanque }} L
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-info text-dark">{{ vehiculo.Tipo.nombre }}</span>
+                            </td>
+                            <td>
+                                {% if vehiculo.chofer_asignado %}
+                                    <span class="text-success">
+                                        <i class="fas fa-user"></i> {{ vehiculo.chofer_asignado.Nombre }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted">
+                                        <i class="fas fa-user-times"></i> Sin asignar
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if vehiculo.seguro and vehiculo.revision_tecnica and vehiculo.permiso_circulacion %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle"></i> Activo
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-exclamation-triangle"></i> Pendiente
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{% url 'admin_editar_vehiculo' vehiculo.patente %}" class="btn btn-warning text-white" title="Editar">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </a>
+                                    <a href="{% url 'admin_eliminar_vehiculo' vehiculo.patente %}" class="btn btn-danger text-white" title="Eliminar">
+                                        <i class="fas fa-trash"></i> Eliminar
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center py-4">
+                                <div class="text-muted">
+                                    <i class="fas fa-car fa-2x mb-2"></i>
+                                    <p>No hay vehículos registrados</p>
+                                    <a href="{% url 'admin_agregar_vehiculo' %}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-plus"></i> Agregar primer vehículo
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.btn-group-sm > .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    margin: 0 2px;
+}
+.btn-warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+.btn-warning:hover {
+    background-color: #e0a800;
+    border-color: #e0a800;
+}
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #c82333;
+}
+</style>
 {% endblock %}

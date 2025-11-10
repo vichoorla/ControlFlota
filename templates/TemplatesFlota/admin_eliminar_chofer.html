@@ -1,0 +1,46 @@
+{% extends 'TemplatesFlota/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación</h4>
+                </div>
+                <div class="card-body">
+                    <h5>¿Estás seguro de que deseas eliminar este chofer?</h5>
+                    
+                    <div class="alert alert-warning">
+                        <strong>Chofer a eliminar:</strong><br>
+                        <strong>Nombre:</strong> {{ chofer.Nombre }}<br>
+                        <strong>RUT:</strong> {{ chofer.RUTChofer }}<br>
+                        <strong>Estado:</strong> {{ chofer.Estado }}
+                    </div>
+
+                    {% if chofer.vehiculos_asignados.exists %}
+                    <div class="alert alert-danger">
+                        <strong>¡Advertencia!</strong> Este chofer tiene {{ chofer.vehiculos_asignados.count }} vehículo(s) asignado(s).
+                        No se puede eliminar hasta que se reassignen los vehículos.
+                    </div>
+                    {% endif %}
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            {% if not chofer.vehiculos_asignados.exists %}
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Sí, Eliminar Chofer
+                            </button>
+                            {% endif %}
+                            <a href="{% url 'admin_ver_chofers' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
