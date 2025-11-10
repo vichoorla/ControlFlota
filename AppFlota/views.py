@@ -970,20 +970,31 @@ def admin_ver_tipos_vehiculo(request):
     # Estadísticas
     total_tipos = tipos_vehiculo.count()
     
-    # Contar vehículos por tipo
-    vehiculos_por_tipo = {}
+    # Contar vehículos por tipo 
+    vehiculos_por_tipo = {} 
     total_vehiculos = 0
+    tipos_sin_uso = 0
     
     for tipo in tipos_vehiculo:
-        count = tipo.vehiculos.count()
-        vehiculos_por_tipo[tipo.nombre] = count
+        # Usar la relación correcta
+        if hasattr(tipo, 'vehiculos'):
+            count = tipo.vehiculos.count()
+        else:
+            count = tipo.vehiculo_set.count()
+        
+        # Agregar al diccionario
+        vehiculos_por_tipo = count
         total_vehiculos += count
+        
+        if count == 0:
+            tipos_sin_uso += 1
     
     context = {
         'tipos_vehiculo': tipos_vehiculo,
         'total_tipos': total_tipos,
         'total_vehiculos': total_vehiculos,
-        'vehiculos_por_tipo': vehiculos_por_tipo,
+        'tipos_sin_uso': tipos_sin_uso,
+        'vehiculos_por_tipo': vehiculos_por_tipo,  # Ahora sí existe
     }
     return render(request, 'TemplatesFlota/admin_ver_tipos_vehiculo.html', context)
 

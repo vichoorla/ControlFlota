@@ -18,7 +18,7 @@
         <div class="col-md-4">
             <div class="card text-white bg-primary">
                 <div class="card-body">
-                    <h5 class="card-title">{{ total_tipos.count }}</h5>
+                    <h5 class="card-title">{{ total_tipos }}</h5>
                     <p class="card-text">Total Tipos</p>
                 </div>
             </div>
@@ -26,7 +26,7 @@
         <div class="col-md-4">
             <div class="card text-white bg-success">
                 <div class="card-body">
-                    <h5 class="card-title">{{ tipos_vehiculos.count }}</h5>
+                    <h5 class="card-title">{{ vehiculos_por_tipo }}</h5>
                     <p class="card-text">En Uso</p>
                 </div>
             </div>
@@ -34,7 +34,7 @@
         <div class="col-md-4">
             <div class="card text-white bg-warning">
                 <div class="card-body">
-                    <h5 class="card-title">{{ tipos_vehiculo.count }}</h5>
+                    <h5 class="card-title">{{ tipos_sin_uso }}</h5> 
                     <p class="card-text">Sin Uso</p>
                 </div>
             </div>
@@ -68,12 +68,13 @@
                             <td>{{ tipo.ID_Tipo }}</td>
                             <td><strong>{{ tipo.nombre }}</strong></td>
                             <td>
-                                <span class="badge bg-primary">{{ tipo.vehiculo_set.count }}</span> vehículos
-                            </td>
-                            <td>
-                                <span class="badge {% if tipo.vehiculo_set.count > 0 %}bg-success{% else %}bg-secondary{% endif %}">
-                                    {% if tipo.vehiculo_set.count > 0 %}En uso{% else %}Sin uso{% endif %}
-                                </span>
+                                <span class="badge bg-primary">
+                                    {% if tipo.vehiculos.count %}
+                                        {{ tipo.vehiculos.count }}
+                                    {% else %}
+                                        {{ tipo.vehiculo_set.count }}
+                                    {% endif %}
+                                </span> vehículos
                             </td>
                             <td>
                                 <a href="{% url 'admin_editar_tipo_vehiculo' tipo.pk %}" class="btn btn-sm btn-warning">
