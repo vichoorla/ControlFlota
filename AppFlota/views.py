@@ -258,7 +258,7 @@ def admin_agregar_chofer(request):
                     messages.error(request, f'{field}: {error}')
         except Exception as e:
             messages.error(request, f'Error al agregar chofer: {e}')
-            pass
+            
 
     return render(request, 'TemplatesFlota/admin_agregar_chofer.html', context)
 
