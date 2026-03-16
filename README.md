@@ -1,4 +1,7 @@
 # ControlFlota
+
+Este proyecto es creado en base a clases de programacion, en conjunto a un compañero y no muestra la totalidad alcanzada del sistema. 
+
 Proyecto de aplicacion a la gestion de flota.
 
 Documentación del Sistema de Gestión de Flota (ControlFlota)
