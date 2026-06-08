@@ -15,6 +15,7 @@ urlpatterns = [
     
     path('flota/ver-mantenciones/', views.admin_ver_mantenciones, name='admin_ver_mantenciones'),
     path('flota/ver-combustible/', views.admin_ver_combustible, name='admin_ver_combustible'),
+    path('flota/inventario/', views.admin_ver_inventario, name='admin_ver_inventario'),
     path('flota/ver-mecanicos/', views.admin_ver_mecanicos, name='admin_ver_mecanicos'),
     path('flota/agregar-mecanico/', views.admin_agregar_mecanico, name='admin_agregar_mecanico'),
     

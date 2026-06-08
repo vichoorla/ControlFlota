@@ -4,10 +4,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib import messages
 from django.db import IntegrityError
+from django.db.models import Sum
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .models import Vehiculo, Chofer, Combustible, Mantencion, Mecanico, Usuario, TipoVehiculo
+from .models import Inventario, Vehiculo, Chofer, Combustible, Mantencion, Mecanico, Usuario, TipoVehiculo
 
 
 def debug_users(request):
@@ -523,6 +524,65 @@ def admin_ver_combustible(request):
         'vehiculos_activos': Vehiculo.objects.filter(chofer_asignado__isnull=False).count(),
     }
     return render(request, 'TemplatesFlota/admin_ver_combustible.html', context)
+
+
+@requiere_autenticacion
+@requiere_tipo_usuario(['admin'])
+def admin_ver_inventario(request):
+    from django.core.exceptions import ValidationError
+
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        descripcion = request.POST.get('descripcion', '').strip()
+        cantidad = request.POST.get('cantidad', '0').strip()
+        ubicacion = request.POST.get('ubicacion', '').strip()
+        activo = request.POST.get('activo') == 'on'
+
+        try:
+            if not nombre:
+                messages.error(request, '❌ El nombre del elemento es obligatorio')
+                raise ValidationError('Nombre requerido')
+
+            try:
+                cantidad_int = int(cantidad)
+            except (ValueError, TypeError):
+                messages.error(request, '❌ La cantidad debe ser un número entero válido')
+                raise ValidationError('Cantidad inválida')
+
+            if cantidad_int < 0:
+                messages.error(request, '❌ La cantidad no puede ser negativa')
+                raise ValidationError('Cantidad inválida')
+
+            inventario = Inventario(
+                nombre=nombre,
+                descripcion=descripcion,
+                cantidad=cantidad_int,
+                ubicacion=ubicacion,
+                activo=activo
+            )
+            inventario.full_clean()
+            inventario.save()
+
+            messages.success(request, '✅ Elemento de inventario agregado correctamente')
+            return redirect('admin_ver_inventario')
+
+        except ValidationError:
+            pass
+        except Exception as e:
+            messages.error(request, f'❌ Error al guardar el inventario: {e}')
+
+    inventarios = Inventario.objects.all().order_by('-fecha_actualizacion')
+    total_cantidad = inventarios.aggregate(total=Sum('cantidad'))['total'] or 0
+    total_items = inventarios.count()
+    activos = inventarios.filter(activo=True).count()
+
+    context = {
+        'inventarios': inventarios,
+        'total_items': total_items,
+        'total_cantidad': total_cantidad,
+        'activos': activos,
+    }
+    return render(request, 'TemplatesFlota/admin_ver_inventario.html', context)
 
 
 @requiere_autenticacion

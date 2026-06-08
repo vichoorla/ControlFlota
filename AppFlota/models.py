@@ -148,6 +148,23 @@ class Vehiculo(models.Model):
            raise ValidationError({'año': 'Año debe ser un número válido'})
 
 
+class Inventario(models.Model):
+    ID_Inventario = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=120)
+    descripcion = models.TextField(blank=True)
+    cantidad = models.PositiveIntegerField(default=0)
+    ubicacion = models.CharField(max_length=120, blank=True)
+    activo = models.BooleanField(default=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.nombre} ({self.cantidad})"
+
+    class Meta:
+        verbose_name = 'Inventario'
+        verbose_name_plural = 'Inventarios'
+
+
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
